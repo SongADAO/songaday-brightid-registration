@@ -1,0 +1,10 @@
+.App {
+    background-color: #282c34;
+    color: white;
+}
+
+.App-idchain-registration {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 0;
+}
