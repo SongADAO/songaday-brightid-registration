@@ -50,18 +50,18 @@
 }
 
 .idchain-registration-step__button {
+    align-items: center;
     background: var(--stepButtonBackgroundColor);
-    color: var(--stepButtonColor);
     border-radius: var(--borderRadius);
     border: 0;
+    color: var(--stepButtonColor);
+    cursor: pointer;
     display: flex;
-    align-items: center;
+    font-weight: bold;
     justify-content: center;
+    margin: 0 auto;
     min-width: 75px;
     padding: var(--paddingSize);
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 auto;
 }
 
 .idchain-registration-step__button:hover {
@@ -73,16 +73,16 @@
 
 .idchain-registration-step {
     background: var(--stepBackgroundColor);
-    color: var(--stepTextColor);
     border-radius: var(--borderRadius);
-    padding: var(--paddingSize);
+    color: var(--stepTextColor);
     margin-bottom: var(--paddingSize);
+    padding: var(--paddingSize);
 }
 
 .idchain-registration-step__main {
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .idchain-registration-step__status {
@@ -100,8 +100,8 @@
 }
 
 .idchain-registration-step__heading {
-    margin: 0;
     font-size: 18px;
+    margin: 0;
     padding-left: calc(var(--paddingSize) / 2);
 }
 
@@ -115,18 +115,18 @@
 
 .idchain-registration-step__action-prevented {
     display: block;
-    text-align: center;
     font-size: 0.8em;
+    text-align: center;
 }
 
 /* Description */
 /* -------------------------------------------------------------------------- */
 
 .idchain-registration-step__description {
-    border-radius: var(--borderRadius);
     background: var(--stepDescriptionBackgroundColor);
-    padding: var(--paddingSize);
+    border-radius: var(--borderRadius);
     margin-top: var(--paddingSize);
+    padding: var(--paddingSize);
 }
 
 .idchain-registration-step__description-p {
@@ -139,8 +139,8 @@
 }
 
 .idchain-registration-step__description-button-container {
-    text-align: center;
     margin-bottom: calc(var(--paddingSize) * 3);
+    text-align: center;
 }
 
 .idchain-registration-step__description-qrcode-container {
@@ -162,23 +162,23 @@
 
 .idchain-registration-step__loading-icon {
     display: inline-block;
+    height: 20px;
     position: relative;
     width: 20px;
-    height: 20px;
 }
 
 .idchain-registration-step__loading-icon div {
-    box-sizing: border-box;
-    display: block;
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    margin: 2px;
-    border: 2px solid #fff;
-    border-radius: 50%;
     animation: idchain-registration-step__loading-icon 1.2s
         cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: #fff transparent transparent transparent;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-sizing: border-box;
+    display: block;
+    height: 16px;
+    margin: 2px;
+    position: absolute;
+    width: 16px;
 }
 
 .idchain-registration-step__loading-icon div:nth-child(1) {
@@ -207,14 +207,14 @@
 /* -------------------------------------------------------------------------- */
 
 .idchain-registration-step__response {
-    border-radius: var(--borderRadius);
+    align-items: center;
     background: var(--stepResponseBackgroundColor);
+    border-radius: var(--borderRadius);
     color: var(--stepResponseTextColor);
-    padding: var(--paddingSize);
-    margin-top: var(--paddingSize);
     display: flex;
     font-size: var(--stepResponseFontSize);
-    align-items: center;
+    margin-top: var(--paddingSize);
+    padding: var(--paddingSize);
 }
 
 .idchain-registration-step__response-loading-icon {
@@ -247,8 +247,8 @@
     background: #aaa;
     border-radius: var(--borderRadius);
     height: var(--statusIconSize);
-    width: var(--statusIconSize);
     position: relative;
+    width: var(--statusIconSize);
 }
 
 /* Status Icon - Incomplete */
@@ -262,18 +262,18 @@
     .idchain-registration-step__status-icon:before,
 .idchain-registration-step--incomplete
     .idchain-registration-step__status-icon:after {
+    background-color: var(--statusIncompleteIconColor);
+    bottom: 0;
     content: "\00a0";
     display: inline-block;
     height: var(--statusIncompleteIconHeight);
-    width: 80%;
-    background-color: var(--statusIncompleteIconColor);
-    position: absolute;
-    margin: auto;
     left: 0;
+    margin: auto;
+    position: absolute;
     right: 0;
-    top: 0;
-    bottom: 0;
     text-align: center;
+    top: 0;
+    width: 80%;
 }
 
 .idchain-registration-step--incomplete
@@ -295,22 +295,22 @@
 
 .idchain-registration-step--complete
     .idchain-registration-step__status-icon:after {
-    content: "\00a0";
-    display: inline-block;
-    transform: rotate(45deg);
-    height: var(--statusCompleteIconHeight);
-    width: var(--statusCompleteIconWidth);
     border-bottom: var(--statusCompleteIconBorderWidth) solid
         var(--statusCompleteIconColor);
     border-right: var(--statusCompleteIconBorderWidth) solid
         var(--statusCompleteIconColor);
-    position: absolute;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: -10px;
     bottom: 0;
+    content: "\00a0";
+    display: inline-block;
+    height: var(--statusCompleteIconHeight);
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
     text-align: center;
+    top: -10px;
+    transform: rotate(45deg);
+    width: var(--statusCompleteIconWidth);
 }
 
 /* Status Changes */
@@ -324,10 +324,3 @@
 .idchain-registration-step--inactive {
     opacity: 0.5;
 }
-
-/* DEBUG */
-/* -------------------------------------------------------------------------- */
-
-/* .idchain-registration-step__feedback {
-    display: none;
-} */
