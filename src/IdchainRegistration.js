@@ -1103,8 +1103,8 @@ function IdchainRegistration(props) {
                             </button>
                         </p>
                         <p className="idchain-registration-step__description-p">
-                            If you're on desktop scan this QR code with the
-                            device you have BrightID installed on.
+                            If you're on desktop, scan the QR code below with
+                            the "Scan a Code" button in the BrightID mobile app.
                         </p>
                         <p className="idchain-registration-step__description-qrcode-container">
                             <QRCode
