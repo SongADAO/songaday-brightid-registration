@@ -614,7 +614,7 @@ function IdchainRegistration(props) {
             // const receipt = await tx.wait();
             // console.log(receipt);
 
-            isVerifiedViaContract(true);
+            // setIsVerifiedViaContract(true);
 
             setIsVerifiedViaContractTxnProcessing(false);
             setIsVerifiedViaContractTxnId(null);
