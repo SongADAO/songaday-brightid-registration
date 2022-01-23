@@ -277,11 +277,11 @@ function IdchainRegistration(props) {
         return new ethers.providers.JsonRpcProvider(props.mainnetRpcUrl);
     }
 
-    // function getContract() {
-    //     const provider = getProvider();
+    function getContract() {
+        const provider = getProvider();
 
-    //     return new ethers.Contract(props.contractAddr, contractAbi, provider);
-    // }
+        return new ethers.Contract(props.contractAddr, contractAbi, provider);
+    }
 
     function getContractRw() {
         const provider = getProvider();
@@ -662,22 +662,15 @@ function IdchainRegistration(props) {
 
     async function checkBrightIDVerification(contextId) {
         try {
-            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
+            const addr = await queryWalletAddress();
 
-            console.log(userVerificationUrl);
+            const contract = getContract();
 
-            const request = new Request(userVerificationUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-            });
+            const isVerified = await contract.isVerifiedUser(addr);
 
-            const response = await fetch(request);
+            console.log(isVerified);
 
-            console.log(response);
-
-            return response.ok;
+            return isVerified;
         } catch (e) {
             console.error(e);
             console.log(e);
