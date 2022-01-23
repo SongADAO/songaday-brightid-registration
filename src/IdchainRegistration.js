@@ -240,8 +240,7 @@ function IdchainRegistration(props) {
 
     const [isSponsoredViaContract, setIsSponsoredViaContract] = useState(false);
 
-    const [isRegisteredViaContract, setIsRegisteredViaContract] =
-        useState(false);
+    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(false);
 
     const [
         isSponsoredViaContractTxnProcessing,
@@ -249,32 +248,32 @@ function IdchainRegistration(props) {
     ] = useState(false);
 
     const [
-        isRegisteredViaContractTxnProcessing,
-        setIsRegisteredViaContractTxnProcessing,
+        isVerifiedViaContractTxnProcessing,
+        setIsVerifiedViaContractTxnProcessing,
     ] = useState(false);
 
     const [isSponsoredViaContractTxnId, setIsSponsoredViaContractTxnId] =
         useState(null);
 
-    const [isRegisteredViaContractTxnId, setIsRegisteredViaContractTxnId] =
+    const [isVerifiedViaContractTxnId, setIsVerifiedViaContractTxnId] =
         useState(null);
 
     const [stepConnecWalletStateError, setStepConnecWalletStateError] =
-        useState("");
-
-    const [stepRegisterViaContractError, setStepRegisterViaContractError] =
-        useState("");
-
-    const [stepSponsoredViaContractError, setStepSponsoredViaContractError] =
-        useState("");
-
-    const [stepObtainGasTokensError, setStepObtainGasTokensError] =
         useState("");
 
     const [
         stepSwitchToIDChainNetworkError,
         setStepSwitchToIDChainNetworkError,
     ] = useState("");
+
+    const [stepObtainGasTokensError, setStepObtainGasTokensError] =
+        useState("");
+
+    const [stepSponsoredViaContractError, setStepSponsoredViaContractError] =
+        useState("");
+
+    const [stepVerifyViaContractError, setStepVerifyViaContractError] =
+        useState("");
 
     function hasWeb3Support() {
         return typeof window.ethereum !== "undefined";
@@ -296,8 +295,8 @@ function IdchainRegistration(props) {
         return isSponsoredViaContract === true;
     }
 
-    function hasRegisteredViaContract() {
-        return isRegisteredViaContract === true;
+    function hasVerifiedViaContract() {
+        return isVerifiedViaContract === true;
     }
 
     function hasSwitchedToIDChainNetwork() {
@@ -606,27 +605,27 @@ function IdchainRegistration(props) {
 
             const tx = await contract.verify(addrs, timestamp, v, r, s);
 
-            setIsRegisteredViaContractTxnProcessing(true);
-            setIsRegisteredViaContractTxnId(tx.hash);
-            setStepRegisterViaContractError("");
+            setIsVerifiedViaContractTxnProcessing(true);
+            setIsVerifiedViaContractTxnId(tx.hash);
+            setStepVerifyViaContractError("");
 
             // wait for the transaction to be mined
             await tx.wait();
             // const receipt = await tx.wait();
             // console.log(receipt);
 
-            isRegisteredViaContract(true);
+            isVerifiedViaContract(true);
 
-            setIsRegisteredViaContractTxnProcessing(false);
-            setIsRegisteredViaContractTxnId(null);
-            setStepRegisterViaContractError("");
+            setIsVerifiedViaContractTxnProcessing(false);
+            setIsVerifiedViaContractTxnId(null);
+            setStepVerifyViaContractError("");
         } catch (e) {
             console.error(e);
             console.log(e);
 
-            setIsRegisteredViaContractTxnProcessing(false);
-            setIsRegisteredViaContractTxnId(null);
-            setStepRegisterViaContractError(e.message);
+            setIsVerifiedViaContractTxnProcessing(false);
+            setIsVerifiedViaContractTxnId(null);
+            setStepVerifyViaContractError(e.message);
         }
     }
 
@@ -788,8 +787,8 @@ function IdchainRegistration(props) {
         return "incomplete";
     }
 
-    function stepRegisterViaContractComplete() {
-        if (hasRegisteredViaContract() === true) {
+    function stepVerifyViaContractComplete() {
+        if (hasVerifiedViaContract() === true) {
             return "complete";
         }
 
@@ -855,7 +854,7 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    function stepRegisterViaContractActive() {
+    function stepVerifyViaContractActive() {
         if (
             stepSponsoredViaContractComplete() === "complete" &&
             stepSponsoredViaContractActive() === "active"
@@ -876,13 +875,14 @@ function IdchainRegistration(props) {
         initChainId();
         initGasBalance();
         initIsBrightIDLinked();
+        initIsSponsoredViaContract();
     }
 
     function resetRemoteVerifications() {
         console.log("reset remote");
         setIsBrightIDLinked(false);
         setIsSponsoredViaContract(false);
-        setIsRegisteredViaContract(false);
+        setIsVerifiedViaContract(false);
     }
 
     useEffect(() => {
@@ -1307,8 +1307,8 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepRegisterViaContractComplete()}
-                        idchain-registration-step--${stepRegisterViaContractActive()}
+                        idchain-registration-step--${stepVerifyViaContractComplete()}
+                        idchain-registration-step--${stepVerifyViaContractActive()}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1317,7 +1317,7 @@ function IdchainRegistration(props) {
                         </div>
                         <div className="idchain-registration-step__header">
                             <h2 className="idchain-registration-step__heading">
-                                Register with Song a Day on IDChain
+                                Verify with Song a Day on IDChain
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
@@ -1325,12 +1325,12 @@ function IdchainRegistration(props) {
                                 className="idchain-registration-step__button"
                                 onClick={() => verifyViaContract()}
                             >
-                                Register
+                                Verify
                             </button>
                         </div>
                     </div>
                     <div className="idchain-registration-step__feedback">
-                        {isRegisteredViaContractTxnProcessing && (
+                        {isVerifiedViaContractTxnProcessing && (
                             <div className="idchain-registration-step__response">
                                 <div className="idchain-registration-step__response-loading-icon">
                                     <div className="idchain-registration-step__loading-icon">
@@ -1345,7 +1345,7 @@ function IdchainRegistration(props) {
                                     <div>
                                         <a
                                             className="idchain-registration-step__response-link"
-                                            href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isRegisteredViaContractTxnId}`}
+                                            href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isVerifiedViaContractTxnId}`}
                                             target="_blank"
                                             rel="noreferrer"
                                         >
@@ -1355,9 +1355,9 @@ function IdchainRegistration(props) {
                                 </div>
                             </div>
                         )}
-                        {stepRegisterViaContractError && (
+                        {stepVerifyViaContractError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                {stepRegisterViaContractError}
+                                {stepVerifyViaContractError}
                             </div>
                         )}
                     </div>
