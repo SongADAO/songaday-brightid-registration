@@ -6,7 +6,11 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <img class="App-header__image" src={logo} alt="Song a Day" />
+                <img
+                    className="App-header__image"
+                    src={logo}
+                    alt="Song a Day"
+                />
             </header>
             <main>
                 <div className="App-idchain-registration">
