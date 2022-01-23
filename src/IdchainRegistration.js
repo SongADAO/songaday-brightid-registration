@@ -232,32 +232,32 @@ function IdchainRegistration(props) {
 
     const [ens, setENS] = useState("");
 
-    const [isBrightIDVerified, setIsBrightIDVerified] = useState(false);
+    const [chainId, setChainId] = useState("");
 
-    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(false);
+    const [gasBalance, setGasBalance] = useState(0.0);
+
+    const [isBrightIDLinked, setIsBrightIDLinked] = useState(false);
+
+    const [isSponsoredViaContract, setIsSponsoredViaContract] = useState(false);
 
     const [isRegisteredViaContract, setIsRegisteredViaContract] =
         useState(false);
 
     const [
-        isVerifiedViaContractTxnProcessing,
-        setIsVerifiedViaContractTxnProcessing,
+        isSponsoredViaContractTxnProcessing,
+        setIsSponsoredViaContractTxnProcessing,
     ] = useState(false);
-
-    const [isVerifiedViaContractTxnId, setIsVerifiedViaContractTxnId] =
-        useState(null);
 
     const [
         isRegisteredViaContractTxnProcessing,
         setIsRegisteredViaContractTxnProcessing,
     ] = useState(false);
 
-    const [isRegisteredViaContractTxnId, setIsRegisteredViaContractTxnId] =
+    const [isSponsoredViaContractTxnId, setIsSponsoredViaContractTxnId] =
         useState(null);
 
-    const [chainId, setChainId] = useState("");
-
-    const [gasBalance, setGasBalance] = useState(0.0);
+    const [isRegisteredViaContractTxnId, setIsRegisteredViaContractTxnId] =
+        useState(null);
 
     const [stepConnecWalletStateError, setStepConnecWalletStateError] =
         useState("");
@@ -265,7 +265,7 @@ function IdchainRegistration(props) {
     const [stepRegisterViaContractError, setStepRegisterViaContractError] =
         useState("");
 
-    const [stepVerifyViaContractError, setStepVerifyViaContractError] =
+    const [stepSponsoredViaContractError, setStepSponsoredViaContractError] =
         useState("");
 
     const [stepObtainGasTokensError, setStepObtainGasTokensError] =
@@ -288,12 +288,12 @@ function IdchainRegistration(props) {
         return walletAddress !== "";
     }
 
-    function hasBrightIDVerification() {
-        return isBrightIDVerified === true;
+    function hasBrightIDLinked() {
+        return isBrightIDLinked === true;
     }
 
-    function hasVerifiedViaContract() {
-        return isVerifiedViaContract === true;
+    function hasSponsoredViaContract() {
+        return isSponsoredViaContract === true;
     }
 
     function hasRegisteredViaContract() {
@@ -461,20 +461,37 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function initIsBrightIDVerified() {
+    async function initIsBrightIDLinked() {
         try {
             const addr = await queryWalletAddress();
 
-            const isBrightIDVerified = await checkBrightIDVerification(addr);
+            const isBrightIDLinked = await checkBrightIDLink(addr);
 
-            console.log(isBrightIDVerified);
+            console.log(isBrightIDLinked);
 
-            setIsBrightIDVerified(isBrightIDVerified);
+            setIsBrightIDLinked(isBrightIDLinked);
         } catch (e) {
             console.error(e);
             console.log(e);
 
-            setIsBrightIDVerified(false);
+            setIsBrightIDLinked(false);
+        }
+    }
+
+    async function initIsSponsoredViaContract() {
+        try {
+            const addr = await queryWalletAddress();
+
+            const isSponsoredViaContract = await checkBrightIDSponsorship(addr);
+
+            console.log(isSponsoredViaContract);
+
+            setIsSponsoredViaContract(isSponsoredViaContract);
+        } catch (e) {
+            console.error(e);
+            console.log(e);
+
+            setIsSponsoredViaContract(false);
         }
     }
 
@@ -534,7 +551,7 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function verifyViaContract() {
+    async function sponsorViaContract() {
         try {
             const addr = await queryWalletAddress();
 
@@ -542,35 +559,33 @@ function IdchainRegistration(props) {
 
             const tx = await contract.sponsor(addr);
 
-            setIsVerifiedViaContractTxnProcessing(true);
-            setIsVerifiedViaContractTxnId(tx.hash);
-            setStepVerifyViaContractError("");
+            setIsSponsoredViaContractTxnProcessing(true);
+            setIsSponsoredViaContractTxnId(tx.hash);
+            setStepSponsoredViaContractError("");
 
             // wait for the transaction to be mined
             await tx.wait();
             // const receipt = await tx.wait();
             // console.log(receipt);
 
-            setIsVerifiedViaContract(true);
-
-            setIsVerifiedViaContractTxnProcessing(false);
-            setIsVerifiedViaContractTxnId(null);
-            setStepVerifyViaContractError("");
+            setIsSponsoredViaContractTxnProcessing(false);
+            setIsSponsoredViaContractTxnId(null);
+            setStepSponsoredViaContractError("");
         } catch (e) {
             console.error(e);
             console.log(e);
 
-            setIsVerifiedViaContractTxnProcessing(false);
-            setIsVerifiedViaContractTxnId(null);
-            setStepVerifyViaContractError(e.message);
+            setIsSponsoredViaContractTxnProcessing(false);
+            setIsSponsoredViaContractTxnId(null);
+            setStepSponsoredViaContractError(e.message);
         }
     }
 
-    async function registerViaContract() {
+    async function verifyViaContract() {
         try {
             const addr = await queryWalletAddress();
 
-            const verificationData = await getBrightIDVerification(addr);
+            const verificationData = await getBrightIDSignature(addr);
 
             const contract = getContractRw();
 
@@ -615,7 +630,7 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function checkBrightIDVerification(contextId) {
+    async function checkBrightIDLink(contextId) {
         try {
             const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=null&timestamp=null`;
 
@@ -641,7 +656,33 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function getBrightIDVerification(contextId) {
+    async function checkBrightIDSponsorship(contextId) {
+        try {
+            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
+
+            console.log(userVerificationUrl);
+
+            const request = new Request(userVerificationUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+            });
+
+            const response = await fetch(request);
+
+            console.log(response);
+
+            return response.ok;
+        } catch (e) {
+            console.error(e);
+            console.log(e);
+
+            return false;
+        }
+    }
+
+    async function getBrightIDSignature(contextId) {
         try {
             const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
 
@@ -715,8 +756,8 @@ function IdchainRegistration(props) {
         return "incomplete";
     }
 
-    function stepBrightIDVerificationComplete() {
-        if (hasBrightIDVerification() === true) {
+    function stepBrightIDLinkedComplete() {
+        if (hasBrightIDLinked() === true) {
             return "complete";
         }
 
@@ -739,8 +780,8 @@ function IdchainRegistration(props) {
         return "incomplete";
     }
 
-    function stepVerifyViaContractComplete() {
-        if (hasVerifiedViaContract() === true) {
+    function stepSponsoredViaContractComplete() {
+        if (hasSponsoredViaContract() === true) {
             return "complete";
         }
 
@@ -770,7 +811,7 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    function stepBrightIDVerificationActive() {
+    function stepBrightIDLinkedActive() {
         if (
             stepConnecWalletStateComplete() === "complete" &&
             stepConnecWalletStateActive() === "active"
@@ -783,8 +824,8 @@ function IdchainRegistration(props) {
 
     function stepSwitchToIDChainNetworkActive() {
         if (
-            stepBrightIDVerificationComplete() === "complete" &&
-            stepBrightIDVerificationActive() === "active"
+            stepBrightIDLinkedComplete() === "complete" &&
+            stepBrightIDLinkedActive() === "active"
         ) {
             return "active";
         }
@@ -803,7 +844,7 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    function stepVerifyViaContractActive() {
+    function stepSponsoredViaContractActive() {
         if (
             stepObtainGasTokensComplete() === "complete" &&
             stepObtainGasTokensActive() === "active"
@@ -816,8 +857,8 @@ function IdchainRegistration(props) {
 
     function stepRegisterViaContractActive() {
         if (
-            stepVerifyViaContractComplete() === "complete" &&
-            stepVerifyViaContractActive() === "active"
+            stepSponsoredViaContractComplete() === "complete" &&
+            stepSponsoredViaContractActive() === "active"
         ) {
             return "active";
         }
@@ -834,13 +875,13 @@ function IdchainRegistration(props) {
         initWalletAddress();
         initChainId();
         initGasBalance();
-        initIsBrightIDVerified();
+        initIsBrightIDLinked();
     }
 
     function resetRemoteVerifications() {
         console.log("reset remote");
-        setIsBrightIDVerified(false);
-        setIsVerifiedViaContract(false);
+        setIsBrightIDLinked(false);
+        setIsSponsoredViaContract(false);
         setIsRegisteredViaContract(false);
     }
 
@@ -878,19 +919,34 @@ function IdchainRegistration(props) {
     });
 
     useEffect(() => {
-        if (isBrightIDVerified === true) {
+        if (isBrightIDLinked === true) {
             return;
         }
 
         const remoteVerificationRefresh = setInterval(
-            initIsBrightIDVerified,
+            initIsBrightIDLinked,
             5000
         );
 
         return () => {
             clearInterval(remoteVerificationRefresh);
         };
-    }, [isBrightIDVerified]); // eslint-disable-line
+    }, [isBrightIDLinked]); // eslint-disable-line
+
+    useEffect(() => {
+        if (isSponsoredViaContract === true) {
+            return;
+        }
+
+        const remoteVerificationRefresh = setInterval(
+            initIsSponsoredViaContract,
+            5000
+        );
+
+        return () => {
+            clearInterval(remoteVerificationRefresh);
+        };
+    }, [isSponsoredViaContract]); // eslint-disable-line
 
     useEffect(() => {
         const monitorGasBalance = setInterval(initGasBalance, 5000);
@@ -1067,8 +1123,8 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepBrightIDVerificationComplete()}
-                        idchain-registration-step--${stepBrightIDVerificationActive()}
+                        idchain-registration-step--${stepBrightIDLinkedComplete()}
+                        idchain-registration-step--${stepBrightIDLinkedActive()}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1193,8 +1249,8 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepVerifyViaContractComplete()}
-                        idchain-registration-step--${stepVerifyViaContractActive()}
+                        idchain-registration-step--${stepSponsoredViaContractComplete()}
+                        idchain-registration-step--${stepSponsoredViaContractActive()}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1209,14 +1265,14 @@ function IdchainRegistration(props) {
                         <div className="idchain-registration-step__action">
                             <button
                                 className="idchain-registration-step__button"
-                                onClick={() => verifyViaContract()}
+                                onClick={() => sponsorViaContract()}
                             >
                                 Go
                             </button>
                         </div>
                     </div>
                     <div className="idchain-registration-step__feedback">
-                        {isVerifiedViaContractTxnProcessing && (
+                        {isSponsoredViaContractTxnProcessing && (
                             <div className="idchain-registration-step__response">
                                 <div className="idchain-registration-step__response-loading-icon">
                                     <div className="idchain-registration-step__loading-icon">
@@ -1231,7 +1287,7 @@ function IdchainRegistration(props) {
                                     <div>
                                         <a
                                             className="idchain-registration-step__response-link"
-                                            href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isVerifiedViaContractTxnId}`}
+                                            href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isSponsoredViaContractTxnId}`}
                                             target="_blank"
                                             rel="noreferrer"
                                         >
@@ -1241,9 +1297,9 @@ function IdchainRegistration(props) {
                                 </div>
                             </div>
                         )}
-                        {stepVerifyViaContractError && (
+                        {stepSponsoredViaContractError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                {stepVerifyViaContractError}
+                                {stepSponsoredViaContractError}
                             </div>
                         )}
                     </div>
@@ -1267,7 +1323,7 @@ function IdchainRegistration(props) {
                         <div className="idchain-registration-step__action">
                             <button
                                 className="idchain-registration-step__button"
-                                onClick={() => registerViaContract()}
+                                onClick={() => verifyViaContract()}
                             >
                                 Register
                             </button>
