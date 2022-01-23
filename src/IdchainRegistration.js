@@ -456,6 +456,23 @@ function IdchainRegistration(props) {
         }
     }
 
+    async function initIsVerifiedViaContract() {
+        try {
+            const addr = await queryWalletAddress();
+
+            const isVerifiedViaContract = await checkBrightIDVerification(addr);
+
+            console.log(isVerifiedViaContract);
+
+            setIsVerifiedViaContract(isVerifiedViaContract);
+        } catch (e) {
+            console.error(e);
+            console.log(e);
+
+            setIsVerifiedViaContract(false);
+        }
+    }
+
     async function switchToIDChainNetwork() {
         const registrationHexChainId = ethers.utils.hexlify(
             Number(props.registrationChainId)
@@ -618,6 +635,32 @@ function IdchainRegistration(props) {
     }
 
     async function checkBrightIDSponsorship(contextId) {
+        try {
+            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
+
+            console.log(userVerificationUrl);
+
+            const request = new Request(userVerificationUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+            });
+
+            const response = await fetch(request);
+
+            console.log(response);
+
+            return response.ok;
+        } catch (e) {
+            console.error(e);
+            console.log(e);
+
+            return false;
+        }
+    }
+
+    async function checkBrightIDVerification(contextId) {
         try {
             const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
 
@@ -838,6 +881,7 @@ function IdchainRegistration(props) {
         initGasBalance();
         initIsBrightIDLinked();
         initIsSponsoredViaContract();
+        initIsVerifiedViaContract();
     }
 
     function resetRemoteVerifications() {
@@ -909,6 +953,21 @@ function IdchainRegistration(props) {
             clearInterval(remoteVerificationRefresh);
         };
     }, [isSponsoredViaContract]); // eslint-disable-line
+
+    useEffect(() => {
+        if (isVerifiedViaContract === true) {
+            return;
+        }
+
+        const remoteVerificationRefresh = setInterval(
+            initIsVerifiedViaContract,
+            5000
+        );
+
+        return () => {
+            clearInterval(remoteVerificationRefresh);
+        };
+    }, [isVerifiedViaContract]); // eslint-disable-line
 
     useEffect(() => {
         const monitorGasBalance = setInterval(initGasBalance, 5000);
