@@ -52,8 +52,8 @@
 .idchain-registration-step__button {
     align-items: center;
     background: var(--stepButtonBackgroundColor);
-    border-radius: var(--borderRadius);
     border: 0;
+    border-radius: var(--borderRadius);
     color: var(--stepButtonColor);
     cursor: pointer;
     display: flex;
@@ -170,9 +170,9 @@
 .idchain-registration-step__loading-icon div {
     animation: idchain-registration-step__loading-icon 1.2s
         cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border: 2px solid #fff;
     border-color: #fff transparent transparent transparent;
     border-radius: 50%;
-    border: 2px solid #fff;
     box-sizing: border-box;
     display: block;
     height: 16px;
