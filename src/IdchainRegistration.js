@@ -23,19 +23,6 @@ function IdchainRegistration(props) {
         },
         {
             type: "event",
-            name: "AppSet",
-            inputs: [
-                {
-                    type: "bytes32",
-                    name: "_app",
-                    internalType: "bytes32",
-                    indexed: false,
-                },
-            ],
-            anonymous: false,
-        },
-        {
-            type: "event",
             name: "OwnershipTransferred",
             inputs: [
                 {
@@ -140,15 +127,6 @@ function IdchainRegistration(props) {
             type: "function",
             stateMutability: "nonpayable",
             outputs: [],
-            name: "setApp",
-            inputs: [
-                { type: "bytes32", name: "_app", internalType: "bytes32" },
-            ],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
             name: "setVerifierToken",
             inputs: [
                 {
@@ -173,11 +151,7 @@ function IdchainRegistration(props) {
             outputs: [],
             name: "transferOwnership",
             inputs: [
-                {
-                    type: "address",
-                    name: "newOwner",
-                    internalType: "address",
-                },
+                { type: "address", name: "newOwner", internalType: "address" },
             ],
         },
         {
@@ -194,11 +168,7 @@ function IdchainRegistration(props) {
             type: "function",
             stateMutability: "view",
             outputs: [
-                {
-                    type: "address",
-                    name: "",
-                    internalType: "contract IERC20",
-                },
+                { type: "address", name: "", internalType: "contract IERC20" },
             ],
             name: "verifierToken",
             inputs: [],
@@ -209,16 +179,8 @@ function IdchainRegistration(props) {
             outputs: [],
             name: "verify",
             inputs: [
-                {
-                    type: "address[]",
-                    name: "addrs",
-                    internalType: "address[]",
-                },
-                {
-                    type: "uint256",
-                    name: "timestamp",
-                    internalType: "uint256",
-                },
+                { type: "address[]", name: "addrs", internalType: "address[]" },
+                { type: "uint256", name: "timestamp", internalType: "uint256" },
                 { type: "uint8", name: "v", internalType: "uint8" },
                 { type: "bytes32", name: "r", internalType: "bytes32" },
                 { type: "bytes32", name: "s", internalType: "bytes32" },
