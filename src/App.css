@@ -3,6 +3,30 @@
     color: white;
 }
 
+.App-header {
+    text-align: center;
+    padding: 30px 20px 20px;
+}
+
+.App-header__image {
+    max-width: 100%;
+    height: auto;
+}
+
+.App-footer {
+    text-align: center;
+    padding: 20px 20px 40px;
+}
+
+.App-footer a {
+    color: white;
+    text-decoration: none;
+}
+
+.App-footer a:hover {
+    text-decoration: underline;
+}
+
 .App-idchain-registration {
     margin: 0 auto;
     max-width: 400px;
