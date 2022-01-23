@@ -335,7 +335,7 @@ function IdchainRegistration(props) {
     function updateWalletAddress(addr) {
         updateENS(addr);
         setWalletAddress(addr);
-        setQrCodeUrl(`${props.deepLinkPrefix}${addr}`);
+        setQrCodeUrl(`${props.deepLinkPrefix}/${props.context}/${addr}`);
     }
 
     async function updateENS(addr) {
@@ -617,7 +617,7 @@ function IdchainRegistration(props) {
 
     async function checkBrightIDVerification(contextId) {
         try {
-            const userVerificationUrl = `${props.verificationUrl}${props.context}/${contextId}?signed=null&timestamp=null`;
+            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=null&timestamp=null`;
 
             console.log(userVerificationUrl);
 
@@ -643,7 +643,7 @@ function IdchainRegistration(props) {
 
     async function getBrightIDVerification(contextId) {
         try {
-            const userVerificationUrl = `${props.verificationUrl}${props.context}/${contextId}?signed=eth&timestamp=seconds`;
+            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
 
             console.log(userVerificationUrl);
 

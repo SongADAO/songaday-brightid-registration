@@ -12,7 +12,7 @@ function App() {
                     brightIdMeetUrl="https://meet.brightid.org"
                     context="Noble"
                     contractAddr="0x375ADBa519376Bda93ebCC8a1Abbd47736E91C00"
-                    deepLinkPrefix="brightid://link-verification/http:%2f%2fnode.brightid.org/idchain/"
+                    deepLinkPrefix="brightid://link-verification/http:%2f%2fnode.brightid.org"
                     faucetClaimURL="https://idchain.one/api/claim"
                     mainnetRpcUrl="https://mainnet.infura.io/v3/fa20524651b3467098dbdca487a2e765"
                     registrationBlockExplorerUrl="https://explorer.idchain.one"
@@ -23,7 +23,7 @@ function App() {
                     registrationRpcUrl="https://idchain.one/rpc/"
                     registrationTokenDecimal="18"
                     registrationTokenName="Eidi"
-                    verificationUrl="https://app.brightid.org/node/v5/verifications/"
+                    verificationUrl="https://app.brightid.org/node/v5/verifications"
                 />
             </div>
         </div>
