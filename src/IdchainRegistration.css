@@ -321,6 +321,15 @@
     display: none;
 }
 
+.idchain-registration-step--connect .idchain-registration-step__action {
+    display: block;
+}
+
+.idchain-registration-step--complete
+    .idchain-registration-step__description--action-hide-on-complete {
+    display: none;
+}
+
 .idchain-registration-step--inactive {
     opacity: 0.5;
 }

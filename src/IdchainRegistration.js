@@ -4,6 +4,8 @@ import "./IdchainRegistration.css";
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode.react";
 import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 function IdchainRegistration(props) {
     const firstUpdate = useRef(true);
@@ -188,19 +190,25 @@ function IdchainRegistration(props) {
         },
     ];
 
-    const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [isConnected, setIsConnected] = useState(false);
 
     const [walletAddress, setWalletAddress] = useState("");
 
     const [ens, setENS] = useState("");
 
+    const [qrCodeUrlIdchain, setQrCodeUrlIdchain] = useState("");
+
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
+
     const [chainId, setChainId] = useState("");
 
     const [gasBalance, setGasBalance] = useState(0.0);
 
-    const [isBrightIDLinked, setIsBrightIDLinked] = useState(false);
-
-    const [isSponsoredViaContract, setIsSponsoredViaContract] = useState(false);
+    const [brightIDVerification, setBrightIDVerification] = useState({
+        isBrightIDIdchainLinked: false,
+        isBrightIDLinked: false,
+        isSponsoredViaContract: false,
+    });
 
     const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(false);
 
@@ -237,24 +245,24 @@ function IdchainRegistration(props) {
     const [stepVerifyViaContractError, setStepVerifyViaContractError] =
         useState("");
 
-    function hasWeb3Support() {
-        return typeof window.ethereum !== "undefined";
-    }
-
     function hasInstalledWallet() {
-        return hasWeb3Support() === true;
+        return true;
     }
 
     function hasConnectedWallet() {
         return walletAddress !== "";
     }
 
+    function hasBrightIDIdchainLinked() {
+        return brightIDVerification.isBrightIDIdchainLinked === true;
+    }
+
     function hasBrightIDLinked() {
-        return isBrightIDLinked === true;
+        return brightIDVerification.isBrightIDLinked === true;
     }
 
     function hasSponsoredViaContract() {
-        return isSponsoredViaContract === true;
+        return brightIDVerification.isSponsoredViaContract === true;
     }
 
     function hasVerifiedViaContract() {
@@ -269,22 +277,77 @@ function IdchainRegistration(props) {
         return gasBalance !== 0 && gasBalance !== 0.0 && gasBalance !== "0.0";
     }
 
-    function getProvider() {
-        return new ethers.providers.Web3Provider(window.ethereum);
+    function timeout(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function getWeb3Modal() {
+        const providerOptions = {
+            walletconnect: {
+                package: WalletConnectProvider,
+                options: {
+                    infuraId: props.walletConnectInfuraId, // required
+                    rpc: {},
+                    // network: props.registrationChainName,
+                },
+            },
+        };
+
+        providerOptions.walletconnect.options.rpc[props.registrationChainId] =
+            props.registrationRpcUrl;
+
+        return new Web3Modal({
+            network: "mainnet", // optional
+            cacheProvider: true, // optional
+            providerOptions, // required
+        });
+    }
+
+    async function getInstance() {
+        const web3Modal = await getWeb3Modal();
+
+        return await web3Modal.connect();
+    }
+
+    async function getFreshInstance() {
+        if (getProviderType() === "walletconnect") {
+            localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
+            localStorage.removeItem("walletconnect");
+        }
+
+        const web3Modal = await getWeb3Modal();
+
+        await web3Modal.clearCachedProvider();
+
+        return await web3Modal.connect();
+    }
+
+    async function getProvider() {
+        const instance = await getInstance();
+
+        return new ethers.providers.Web3Provider(instance);
+    }
+
+    function getProviderType() {
+        return JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
+    }
+
+    function canAutoSwitchNetworks() {
+        return getProviderType() !== "walletconnect";
     }
 
     function getMainnetProvider() {
         return new ethers.providers.JsonRpcProvider(props.mainnetRpcUrl);
     }
 
-    function getContract() {
-        const provider = getProvider();
+    async function getContract() {
+        const provider = await getProvider();
 
         return new ethers.Contract(props.contractAddr, contractAbi, provider);
     }
 
-    function getContractRw() {
-        const provider = getProvider();
+    async function getContractRw() {
+        const provider = await getProvider();
 
         return new ethers.Contract(
             props.contractAddr,
@@ -296,6 +359,7 @@ function IdchainRegistration(props) {
     function updateWalletAddress(addr) {
         updateENS(addr);
         setWalletAddress(addr);
+        setQrCodeUrlIdchain(`${props.deepLinkPrefix}/idchain/${addr}`);
         setQrCodeUrl(`${props.deepLinkPrefix}/${props.context}/${addr}`);
     }
 
@@ -305,12 +369,16 @@ function IdchainRegistration(props) {
         setENS(ens);
     }
 
-    function installWallet() {
-        window.open("https://metamask.io/", "_blank");
-    }
+    // function installWallet() {
+    //     window.open("https://metamask.io/", "_blank");
+    // }
 
     function verifyWithBrightID() {
         window.open(props.brightIdMeetUrl, "_blank");
+    }
+
+    function linkAddressToBrightIDIdchain() {
+        window.open(qrCodeUrlIdchain);
     }
 
     function linkAddressToBrightID() {
@@ -319,27 +387,36 @@ function IdchainRegistration(props) {
 
     async function connectWallet() {
         try {
-            const provider = getProvider();
+            await getInstance();
 
-            await provider.send("eth_requestAccounts", []);
-
-            const addr = await provider.getSigner().getAddress();
-
-            console.log(addr);
-
-            updateWalletAddress(addr);
-
+            setIsConnected(true);
             setStepConnecWalletStateError("");
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
+            setIsConnected(false);
+            setStepConnecWalletStateError(e.message);
+        }
+    }
+
+    async function chooseWallet() {
+        try {
+            await getFreshInstance();
+
+            setIsConnected(true);
+            setStepConnecWalletStateError("");
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+
+            setIsConnected(false);
             setStepConnecWalletStateError(e.message);
         }
     }
 
     async function queryWalletAddress() {
-        const provider = getProvider();
+        const provider = await getProvider();
 
         const accounts = await provider.listAccounts();
 
@@ -358,12 +435,12 @@ function IdchainRegistration(props) {
 
             const name = await provider.lookupAddress(addr);
 
-            console.log(name);
+            // console.log(name);
 
             return name;
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
         }
     }
 
@@ -371,33 +448,33 @@ function IdchainRegistration(props) {
         try {
             const addr = await queryWalletAddress();
 
-            console.log(addr);
+            // console.log(addr);
 
             updateWalletAddress(addr);
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
         }
     }
 
     async function initChainId() {
         try {
-            const provider = getProvider();
+            const provider = await getProvider();
 
             const { chainId } = await provider.getNetwork();
 
-            console.log(chainId);
+            // console.log(chainId);
 
             setChainId(chainId);
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
         }
     }
 
     async function initGasBalance() {
         try {
-            const provider = getProvider();
+            const provider = await getProvider();
 
             const { chainId } = await provider.getNetwork();
 
@@ -411,48 +488,51 @@ function IdchainRegistration(props) {
 
             const balance = ethers.utils.formatEther(balanceRaw);
 
-            console.log(balance);
+            // console.log(balance);
 
             setGasBalance(balance);
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             setGasBalance(0);
         }
     }
 
-    async function initIsBrightIDLinked() {
+    async function initIsBrightIDVerifications() {
+        const verifications = {
+            isBrightIDIdchainLinked: hasBrightIDIdchainLinked(),
+            isBrightIDLinked: hasBrightIDLinked(),
+            isSponsoredViaContract: hasSponsoredViaContract(),
+        };
+
         try {
             const addr = await queryWalletAddress();
 
-            const isBrightIDLinked = await checkBrightIDLink(addr);
+            if (verifications.isBrightIDIdchainLinked === false) {
+                verifications.isBrightIDIdchainLinked =
+                    await checkBrightIDIdchainLink(addr);
 
-            console.log(isBrightIDLinked);
+                await timeout(2000);
+            }
 
-            setIsBrightIDLinked(isBrightIDLinked);
+            if (verifications.isBrightIDLinked === false) {
+                verifications.isBrightIDLinked = await checkBrightIDLink(addr);
+
+                await timeout(2000);
+            }
+
+            if (verifications.isSponsoredViaContract === false) {
+                verifications.isSponsoredViaContract =
+                    await checkBrightIDSponsorship(addr);
+            }
+
+            setBrightIDVerification(verifications);
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
-            setIsBrightIDLinked(false);
-        }
-    }
-
-    async function initIsSponsoredViaContract() {
-        try {
-            const addr = await queryWalletAddress();
-
-            const isSponsoredViaContract = await checkBrightIDSponsorship(addr);
-
-            console.log(isSponsoredViaContract);
-
-            setIsSponsoredViaContract(isSponsoredViaContract);
-        } catch (e) {
-            console.error(e);
-            console.log(e);
-
-            setIsSponsoredViaContract(false);
+            setBrightIDVerification(verifications);
         }
     }
 
@@ -462,12 +542,12 @@ function IdchainRegistration(props) {
 
             const isVerifiedViaContract = await checkBrightIDVerification(addr);
 
-            console.log(isVerifiedViaContract);
+            // console.log(isVerifiedViaContract);
 
             setIsVerifiedViaContract(isVerifiedViaContract);
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             setIsVerifiedViaContract(false);
         }
@@ -479,21 +559,27 @@ function IdchainRegistration(props) {
         );
 
         try {
-            await window.ethereum.request({
+            const provider = await getProvider();
+
+            await provider.provider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: registrationHexChainId }],
             });
 
             setStepSwitchToIDChainNetworkError("");
         } catch (switchError) {
+            // console.log(switchError);
+
             // This error code indicates that the chain has not been added to MetaMask.
             if (switchError.code === 4902) {
                 try {
-                    await window.ethereum.request({
+                    const provider = await getProvider();
+
+                    await provider.provider.request({
                         method: "wallet_addEthereumChain",
                         params: [
                             {
-                                chainId: props.registrationHexChainId,
+                                chainId: registrationHexChainId,
                                 chainName: props.registrationChainName,
                                 nativeCurrency: {
                                     name: props.registrationTokenName,
@@ -513,8 +599,8 @@ function IdchainRegistration(props) {
 
                     setStepSwitchToIDChainNetworkError("");
                 } catch (addError) {
-                    console.error(addError);
-                    console.log(addError);
+                    // console.error(addError);
+                    // console.log(addError);
 
                     setStepSwitchToIDChainNetworkError(addError.message);
                 }
@@ -522,8 +608,8 @@ function IdchainRegistration(props) {
                 return;
             }
 
-            console.error(switchError);
-            console.log(switchError);
+            // console.error(switchError);
+            // console.log(switchError);
 
             setStepSwitchToIDChainNetworkError(switchError.message);
         }
@@ -533,7 +619,7 @@ function IdchainRegistration(props) {
         try {
             const addr = await queryWalletAddress();
 
-            const contract = getContractRw();
+            const contract = await getContractRw();
 
             const tx = await contract.sponsor(addr);
 
@@ -544,14 +630,14 @@ function IdchainRegistration(props) {
             // wait for the transaction to be mined
             await tx.wait();
             // const receipt = await tx.wait();
-            // console.log(receipt);
+            // // console.log(receipt);
 
             setIsSponsoredViaContractTxnProcessing(false);
             setIsSponsoredViaContractTxnId(null);
             setStepSponsoredViaContractError("");
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             setIsSponsoredViaContractTxnProcessing(false);
             setIsSponsoredViaContractTxnId(null);
@@ -565,7 +651,7 @@ function IdchainRegistration(props) {
 
             const verificationData = await getBrightIDSignature(addr);
 
-            const contract = getContractRw();
+            const contract = await getContractRw();
 
             // const addrs = [addr];
             const addrs = verificationData.data.contextIds;
@@ -574,13 +660,13 @@ function IdchainRegistration(props) {
             const r = "0x" + verificationData.data.sig.r;
             const s = "0x" + verificationData.data.sig.s;
 
-            // console.log("-------------------------------");
-            // console.log(addrs);
-            // console.log(timestamp);
-            // console.log(v);
-            // console.log(r);
-            // console.log(s);
-            // console.log("-------------------------------");
+            // // console.log("-------------------------------");
+            // // console.log(addrs);
+            // // console.log(timestamp);
+            // // console.log(v);
+            // // console.log(r);
+            // // console.log(s);
+            // // console.log("-------------------------------");
 
             const tx = await contract.verify(addrs, timestamp, v, r, s);
 
@@ -591,7 +677,7 @@ function IdchainRegistration(props) {
             // wait for the transaction to be mined
             await tx.wait();
             // const receipt = await tx.wait();
-            // console.log(receipt);
+            // // console.log(receipt);
 
             // setIsVerifiedViaContract(true);
 
@@ -599,8 +685,8 @@ function IdchainRegistration(props) {
             setIsVerifiedViaContractTxnId(null);
             setStepVerifyViaContractError("");
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             setIsVerifiedViaContractTxnProcessing(false);
             setIsVerifiedViaContractTxnId(null);
@@ -608,11 +694,13 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function checkBrightIDLink(contextId) {
+    async function checkBrightIDIdchainLink(contextId) {
         try {
-            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=null&timestamp=null`;
+            console.log("checkBrightIDIdchainLink");
 
-            console.log(userVerificationUrl);
+            const userVerificationUrl = `${props.verificationUrl}/idchain/${contextId}?signed=null&timestamp=null`;
+
+            // console.log(userVerificationUrl);
 
             const request = new Request(userVerificationUrl, {
                 method: "GET",
@@ -623,12 +711,40 @@ function IdchainRegistration(props) {
 
             const response = await fetch(request);
 
-            console.log(response);
+            // console.log(response);
 
             return response.ok;
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
+
+            return false;
+        }
+    }
+
+    async function checkBrightIDLink(contextId) {
+        try {
+            console.log("checkBrightIDLink");
+
+            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=null&timestamp=null`;
+
+            // console.log(userVerificationUrl);
+
+            const request = new Request(userVerificationUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+            });
+
+            const response = await fetch(request);
+
+            // console.log(response);
+
+            return response.ok;
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
 
             return false;
         }
@@ -636,9 +752,11 @@ function IdchainRegistration(props) {
 
     async function checkBrightIDSponsorship(contextId) {
         try {
+            console.log("checkBrightIDSponsorship");
+
             const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
 
-            console.log(userVerificationUrl);
+            // console.log(userVerificationUrl);
 
             const request = new Request(userVerificationUrl, {
                 method: "GET",
@@ -649,12 +767,12 @@ function IdchainRegistration(props) {
 
             const response = await fetch(request);
 
-            console.log(response);
+            // console.log(response);
 
             return response.ok;
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             return false;
         }
@@ -664,16 +782,16 @@ function IdchainRegistration(props) {
         try {
             const addr = await queryWalletAddress();
 
-            const contract = getContract();
+            const contract = await getContract();
 
             const isVerified = await contract.isVerifiedUser(addr);
 
-            console.log(isVerified);
+            // console.log(isVerified);
 
             return isVerified;
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             return false;
         }
@@ -683,7 +801,7 @@ function IdchainRegistration(props) {
         try {
             const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
 
-            console.log(userVerificationUrl);
+            // console.log(userVerificationUrl);
 
             const request = new Request(userVerificationUrl, {
                 method: "GET",
@@ -720,7 +838,7 @@ function IdchainRegistration(props) {
 
             const response = await fetch(request);
 
-            console.log(response);
+            // console.log(response);
 
             if (response.ok === false) {
                 throw new Error(`HTTP error, status = ${response.status}`);
@@ -730,8 +848,8 @@ function IdchainRegistration(props) {
 
             return response.json();
         } catch (e) {
-            console.error(e);
-            console.log(e);
+            // console.error(e);
+            // console.log(e);
 
             setStepObtainGasTokensError(e.message);
         }
@@ -747,6 +865,14 @@ function IdchainRegistration(props) {
 
     function stepConnecWalletStateComplete() {
         if (hasConnectedWallet() === true) {
+            return "complete";
+        }
+
+        return "incomplete";
+    }
+
+    function stepBrightIDLinkedIdchainComplete() {
+        if (hasBrightIDIdchainLinked() === true) {
             return "complete";
         }
 
@@ -808,10 +934,21 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    function stepBrightIDLinkedActive() {
+    function stepBrightIDLinkedIdchainActive() {
         if (
             stepConnecWalletStateComplete() === "complete" &&
             stepConnecWalletStateActive() === "active"
+        ) {
+            return "active";
+        }
+
+        return "inactive";
+    }
+
+    function stepBrightIDLinkedActive() {
+        if (
+            stepBrightIDLinkedIdchainComplete() === "complete" &&
+            stepBrightIDLinkedIdchainActive() === "active"
         ) {
             return "active";
         }
@@ -863,91 +1000,78 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    function refreshWalletState() {
-        if (hasWeb3Support() === false) {
-            return;
-        }
-
-        console.log("refresh");
-        initWalletAddress();
-        initChainId();
-        initGasBalance();
-        initIsBrightIDLinked();
-        initIsSponsoredViaContract();
-        initIsVerifiedViaContract();
+    async function refreshWalletState() {
+        // console.log("refresh");
+        await initWalletAddress();
+        await initChainId();
+        await initGasBalance();
+        await initIsBrightIDVerifications();
+        await initIsVerifiedViaContract();
     }
 
     function resetRemoteVerifications() {
-        console.log("reset remote");
-        setIsBrightIDLinked(false);
-        setIsSponsoredViaContract(false);
-        setIsVerifiedViaContract(false);
+        // console.log("reset remote");
+        setBrightIDVerification({
+            isBrightIDIdchainLinked: false,
+            isBrightIDLinked: false,
+            isSponsoredViaContract: false,
+        });
+    }
+
+    async function attachListeners() {
+        const provider = await getInstance();
+
+        // console.log("attach listeners");
+        // console.log(provider);
+
+        provider.on("accountsChanged", resetRemoteVerifications);
+        provider.on("chainChanged", resetRemoteVerifications);
+
+        provider.on("accountsChanged", refreshWalletState);
+        provider.on("chainChanged", refreshWalletState);
+    }
+
+    async function detachListeners() {
+        const provider = await getInstance();
+
+        // console.log("remove listeners");
+        // console.log(provider);
+
+        provider.removeListener("accountsChanged", resetRemoteVerifications);
+        provider.removeListener("chainChanged", resetRemoteVerifications);
+
+        provider.removeListener("accountsChanged", refreshWalletState);
+        provider.removeListener("chainChanged", refreshWalletState);
     }
 
     useEffect(() => {
-        if (hasWeb3Support() === false) {
+        if (isConnected === false) {
             return;
         }
 
-        // console.log("attach listeners");
-
-        window.ethereum.on("accountsChanged", resetRemoteVerifications);
-        window.ethereum.on("chainChanged", resetRemoteVerifications);
-
-        window.ethereum.on("accountsChanged", refreshWalletState);
-        window.ethereum.on("chainChanged", refreshWalletState);
-
-        return () => {
-            // console.log("remove listeners");
-
-            window.ethereum.removeListener(
-                "accountsChanged",
-                resetRemoteVerifications
-            );
-            window.ethereum.removeListener(
-                "chainChanged",
-                resetRemoteVerifications
-            );
-
-            window.ethereum.removeListener(
-                "accountsChanged",
-                refreshWalletState
-            );
-            window.ethereum.removeListener("chainChanged", refreshWalletState);
-        };
-    });
-
-    useEffect(() => {
-        if (isBrightIDLinked === true) {
+        if (
+            brightIDVerification.isBrightIDIdchainLinked === true &&
+            brightIDVerification.isBrightIDLinked === true &&
+            brightIDVerification.isSponsoredViaContract === true
+        ) {
             return;
         }
 
         const remoteVerificationRefresh = setInterval(
-            initIsBrightIDLinked,
+            initIsBrightIDVerifications,
             5000
         );
 
         return () => {
             clearInterval(remoteVerificationRefresh);
         };
-    }, [isBrightIDLinked]); // eslint-disable-line
+    }, [brightIDVerification]); // eslint-disable-line
 
     useEffect(() => {
-        if (isSponsoredViaContract === true) {
+        if (isConnected === false) {
             return;
         }
 
-        const remoteVerificationRefresh = setInterval(
-            initIsSponsoredViaContract,
-            5000
-        );
-
-        return () => {
-            clearInterval(remoteVerificationRefresh);
-        };
-    }, [isSponsoredViaContract]); // eslint-disable-line
-
-    useEffect(() => {
         if (isVerifiedViaContract === true) {
             return;
         }
@@ -963,12 +1087,21 @@ function IdchainRegistration(props) {
     }, [isVerifiedViaContract]); // eslint-disable-line
 
     useEffect(() => {
+        if (isConnected === false) {
+            return;
+        }
+
+        refreshWalletState();
+
         const monitorGasBalance = setInterval(initGasBalance, 5000);
+
+        attachListeners();
 
         return () => {
             clearInterval(monitorGasBalance);
+            detachListeners();
         };
-    });
+    }, [isConnected]); // eslint-disable-line
 
     useEffect(() => {
         if (firstUpdate.current === false) {
@@ -979,7 +1112,23 @@ function IdchainRegistration(props) {
             firstUpdate.current = false;
         }
 
-        refreshWalletState();
+        const cachedProviderName = getProviderType();
+
+        if (
+            cachedProviderName === "injected" ||
+            cachedProviderName === "walletconnect"
+        ) {
+            connectWallet();
+        }
+
+        // if (cachedProviderName === "injected") {
+        //     connectWallet();
+        // }
+
+        // if (cachedProviderName === "walletconnect") {
+        //     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
+        //     localStorage.removeItem("walletconnect");
+        // }
     });
 
     return (
@@ -1051,9 +1200,10 @@ function IdchainRegistration(props) {
                         </p>
                     </div>
                 </section>
-                <section
+                {/* <section
                     className={`
                         idchain-registration-step
+                        idchain-registration-step--install
                         idchain-registration-step--${stepInstallWalletStateComplete()}
                         idchain-registration-step--${stepInstallWalletStateActive()}
                     `}
@@ -1076,10 +1226,11 @@ function IdchainRegistration(props) {
                             </button>
                         </div>
                     </div>
-                </section>
+                </section> */}
                 <section
                     className={`
                         idchain-registration-step
+                        idchain-registration-step--connect
                         idchain-registration-step--${stepConnecWalletStateComplete()}
                         idchain-registration-step--${stepConnecWalletStateActive()}
                     `}
@@ -1096,7 +1247,7 @@ function IdchainRegistration(props) {
                         <div className="idchain-registration-step__action">
                             <button
                                 className="idchain-registration-step__button"
-                                onClick={() => connectWallet()}
+                                onClick={() => chooseWallet()}
                             >
                                 Connect
                             </button>
@@ -1137,6 +1288,66 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
+                        idchain-registration-step--brightid-link-idchain
+                        idchain-registration-step--${stepBrightIDLinkedIdchainComplete()}
+                        idchain-registration-step--${stepBrightIDLinkedIdchainActive()}
+                    `}
+                >
+                    <div className="idchain-registration-step__main">
+                        <div className="idchain-registration-step__status">
+                            <div className="idchain-registration-step__status-icon"></div>
+                        </div>
+                        <div className="idchain-registration-step__header">
+                            <h2 className="idchain-registration-step__heading">
+                                Link Wallet to IDChain
+                            </h2>
+                        </div>
+                        <div className="idchain-registration-step__action">
+                            {/* <button
+                                className="idchain-registration-step__button"
+                                onClick={() => linkAddressToBrightIDIdchain()}
+                            >
+                                Link Address
+                            </button> */}
+                        </div>
+                    </div>
+                    <div
+                        className="
+                            idchain-registration-step__description
+                            idchain-registration-step__description--action
+                            idchain-registration-step__description--action-hide-on-complete
+                        "
+                    >
+                        <p className="idchain-registration-step__description-p">
+                            If you're on your mobile device just use this button
+                            to open BrightID and link your wallet.
+                        </p>
+                        <p className="idchain-registration-step__description-button-container">
+                            <button
+                                className="idchain-registration-step__button"
+                                onClick={() => linkAddressToBrightIDIdchain()}
+                            >
+                                Link Address
+                            </button>
+                        </p>
+                        <p className="idchain-registration-step__description-p">
+                            If you're on desktop, scan the QR code below with
+                            the "Scan a Code" button in the BrightID mobile app.
+                        </p>
+                        <p className="idchain-registration-step__description-qrcode-container">
+                            <QRCode
+                                renderAs="svg"
+                                size={200}
+                                value={qrCodeUrlIdchain}
+                            />
+                        </p>
+                    </div>
+                    <div className="idchain-registration-step__feedback"></div>
+                </section>
+                <section
+                    className={`
+                        idchain-registration-step
+                        idchain-registration-step--brightid-link
                         idchain-registration-step--${stepBrightIDLinkedComplete()}
                         idchain-registration-step--${stepBrightIDLinkedActive()}
                     `}
@@ -1147,7 +1358,7 @@ function IdchainRegistration(props) {
                         </div>
                         <div className="idchain-registration-step__header">
                             <h2 className="idchain-registration-step__heading">
-                                Link Wallet to BrightID
+                                Link Wallet to Snapshot
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
@@ -1159,7 +1370,13 @@ function IdchainRegistration(props) {
                             </button> */}
                         </div>
                     </div>
-                    <div className="idchain-registration-step__description step__description--action">
+                    <div
+                        className="
+                            idchain-registration-step__description
+                            idchain-registration-step__description--action
+                            idchain-registration-step__description--action-hide-on-complete
+                        "
+                    >
                         <p className="idchain-registration-step__description-p">
                             If you're on your mobile device just use this button
                             to open BrightID and link your wallet.
@@ -1203,14 +1420,50 @@ function IdchainRegistration(props) {
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => switchToIDChainNetwork()}
-                            >
-                                Switch
-                            </button>
+                            {canAutoSwitchNetworks() && (
+                                <button
+                                    className="idchain-registration-step__button"
+                                    onClick={() => switchToIDChainNetwork()}
+                                >
+                                    Switch
+                                </button>
+                            )}
                         </div>
                     </div>
+                    {!canAutoSwitchNetworks() && (
+                        <div
+                            className="
+                                idchain-registration-step__description
+                                idchain-registration-step__description--action
+                                idchain-registration-step__description--action-hide-on-complete
+                            "
+                        >
+                            <p className="idchain-registration-step__description-p">
+                                In your wallet app create a new network with the
+                                following data and switch to that network.
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                <strong>Network Name: </strong>
+                                {props.registrationChainName}
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                <strong>RPC URL: </strong>
+                                {props.registrationRpcUrl}
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                <strong>Chain ID: </strong>
+                                {props.registrationChainId}
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                <strong>Currency Symbol: </strong>
+                                {props.registrationTokenName}
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                <strong>Block Explorer URL: </strong>
+                                {props.registrationBlockExplorerUrl}
+                            </p>
+                        </div>
+                    )}
                     <div className="idchain-registration-step__feedback">
                         {stepSwitchToIDChainNetworkError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
@@ -1284,6 +1537,19 @@ function IdchainRegistration(props) {
                                 Go
                             </button>
                         </div>
+                    </div>
+                    <div
+                        className="
+                            idchain-registration-step__description
+                            idchain-registration-step__description--action
+                            idchain-registration-step__description--action-hide-on-complete
+                        "
+                    >
+                        <p className="idchain-registration-step__description-p">
+                            This should happen automatically, but if not you can
+                            manually put the transaction through with the button
+                            in this step.
+                        </p>
                     </div>
                     <div className="idchain-registration-step__feedback">
                         {isSponsoredViaContractTxnProcessing && (
