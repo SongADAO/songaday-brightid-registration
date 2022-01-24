@@ -21,7 +21,7 @@ function App() {
                         context="snapshot"
                         contractAddr="0x81591DC4997A76A870c13D383F8491B288E09344"
                         deepLinkPrefix="brightid://link-verification/http:%2f%2fnode.brightid.org"
-                        faucetClaimURL="https://idchain.one/api/claim"
+                        faucetClaimURL="https://idchain.one/begin/api/claim"
                         mainnetRpcUrl="https://mainnet.infura.io/v3/fa20524651b3467098dbdca487a2e765"
                         registrationBlockExplorerUrl="https://explorer.idchain.one"
                         registrationBlockExplorerTxnPath="/tx/"
