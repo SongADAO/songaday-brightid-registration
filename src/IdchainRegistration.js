@@ -681,6 +681,8 @@ function IdchainRegistration(props) {
 
             // setIsVerifiedViaContract(true);
 
+            await initIsVerifiedViaContract();
+
             setIsVerifiedViaContractTxnProcessing(false);
             setIsVerifiedViaContractTxnId(null);
             setStepVerifyViaContractError("");
