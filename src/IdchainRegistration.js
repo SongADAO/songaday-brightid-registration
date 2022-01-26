@@ -793,7 +793,7 @@ function IdchainRegistration(props) {
         try {
             const addr = await queryWalletAddress();
 
-            const contract = await getContract();
+            const contract = await getIdchainProviderContract();
 
             const isVerified = await contract.isVerifiedUser(addr);
 
