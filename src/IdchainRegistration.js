@@ -210,7 +210,7 @@ function IdchainRegistration(props) {
         isSponsoredViaContract: false,
     });
 
-    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(false);
+    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(null);
 
     const [
         isSponsoredViaContractTxnProcessing,
@@ -1011,48 +1011,40 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    async function refreshWalletState() {
-        // console.log("refresh");
-        await initWalletAddress();
-        await initChainId();
-        await initGasBalance();
-        await initIsBrightIDVerifications();
-        await initIsVerifiedViaContract();
-    }
-
-    function resetRemoteVerifications() {
-        // console.log("reset remote");
+    async function onAccountChange() {
         setBrightIDVerification({
             isBrightIDIdchainLinked: false,
             isBrightIDLinked: false,
             isSponsoredViaContract: false,
         });
+
+        setIsVerifiedViaContract(false);
+
+        await initWalletAddress();
+        await initChainId();
+        await initGasBalance();
     }
 
-    async function attachListeners() {
-        const provider = await getInstance();
+    async function onChainChanged() {
+        await initChainId();
+    }
 
+    async function attachProviderListeners() {
         // console.log("attach listeners");
-        // console.log(provider);
 
-        provider.on("accountsChanged", resetRemoteVerifications);
-        provider.on("chainChanged", resetRemoteVerifications);
-
-        provider.on("accountsChanged", refreshWalletState);
-        provider.on("chainChanged", refreshWalletState);
-    }
-
-    async function detachListeners() {
         const provider = await getInstance();
 
+        provider.on("accountsChanged", onAccountChange);
+        provider.on("chainChanged", onChainChanged);
+    }
+
+    async function detachProviderListeners() {
         // console.log("remove listeners");
-        // console.log(provider);
 
-        provider.removeListener("accountsChanged", resetRemoteVerifications);
-        provider.removeListener("chainChanged", resetRemoteVerifications);
+        const provider = await getInstance();
 
-        provider.removeListener("accountsChanged", refreshWalletState);
-        provider.removeListener("chainChanged", refreshWalletState);
+        provider.removeListener("accountsChanged", onAccountChange);
+        provider.removeListener("chainChanged", onChainChanged);
     }
 
     useEffect(() => {
@@ -1067,6 +1059,8 @@ function IdchainRegistration(props) {
         ) {
             return;
         }
+
+        initIsBrightIDVerifications();
 
         const remoteVerificationRefresh = setInterval(
             initIsBrightIDVerifications,
@@ -1087,6 +1081,8 @@ function IdchainRegistration(props) {
             return;
         }
 
+        initIsVerifiedViaContract();
+
         const remoteVerificationRefresh = setInterval(
             initIsVerifiedViaContract,
             5000
@@ -1102,15 +1098,13 @@ function IdchainRegistration(props) {
             return;
         }
 
-        refreshWalletState();
-
+        onAccountChange();
+        attachProviderListeners();
         const monitorGasBalance = setInterval(initGasBalance, 5000);
 
-        attachListeners();
-
         return () => {
+            detachProviderListeners();
             clearInterval(monitorGasBalance);
-            detachListeners();
         };
     }, [isConnected]); // eslint-disable-line
 
