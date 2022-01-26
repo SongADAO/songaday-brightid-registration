@@ -632,6 +632,8 @@ function IdchainRegistration(props) {
             // const receipt = await tx.wait();
             // // console.log(receipt);
 
+            await initIsBrightIDVerifications();
+
             setIsSponsoredViaContractTxnProcessing(false);
             setIsSponsoredViaContractTxnId(null);
             setStepSponsoredViaContractError("");
