@@ -518,11 +518,14 @@ function IdchainRegistration(props) {
 
             if (verifications.isBrightIDLinked === false) {
                 verifications.isBrightIDLinked = await checkBrightIDLink(addr);
-
-                await timeout(2000);
             }
 
-            if (verifications.isSponsoredViaContract === false) {
+            if (
+                verifications.isBrightIDLinked === true &&
+                verifications.isSponsoredViaContract === false
+            ) {
+                await timeout(2000);
+
                 verifications.isSponsoredViaContract =
                     await checkBrightIDSponsorship(addr);
             }
