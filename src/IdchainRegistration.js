@@ -340,11 +340,21 @@ function IdchainRegistration(props) {
         return new ethers.providers.JsonRpcProvider(props.mainnetRpcUrl);
     }
 
-    async function getContract() {
-        const provider = await getProvider();
+    function getIdchainProvider() {
+        return new ethers.providers.JsonRpcProvider(props.registrationRpcUrl);
+    }
+
+    async function getIdchainProviderContract() {
+        const provider = await getIdchainProvider();
 
         return new ethers.Contract(props.contractAddr, contractAbi, provider);
     }
+
+    // async function getContract() {
+    //     const provider = await getProvider();
+
+    //     return new ethers.Contract(props.contractAddr, contractAbi, provider);
+    // }
 
     async function getContractRw() {
         const provider = await getProvider();
@@ -474,15 +484,9 @@ function IdchainRegistration(props) {
 
     async function initGasBalance() {
         try {
-            const provider = await getProvider();
-
-            const { chainId } = await provider.getNetwork();
-
-            if (chainId !== Number(props.registrationChainId)) {
-                throw new Error("Not on IDChain Network");
-            }
-
             const addr = await queryWalletAddress();
+
+            const provider = await getIdchainProvider();
 
             const balanceRaw = await provider.getBalance(addr);
 
