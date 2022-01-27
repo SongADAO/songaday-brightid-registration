@@ -7,6 +7,32 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
+let brightIDVerificationRefresh = 0;
+
+let contractVerificationRefresh = 0;
+
+let gasBalanceRefresh = 0;
+
+let web3Modal;
+
+let web3Instance;
+
+let web3Address = "";
+
+let web3ENS = "";
+
+let web3ChainId = 0;
+
+let web3GasBalance = 0;
+
+let web3IsBrightIDIdchainLinked = false;
+
+let web3IsBrightIDLinked = false;
+
+let web3IsSponsoredViaContract = false;
+
+let web3IsVerifiedViaContract = false;
+
 function IdchainRegistration(props) {
     const firstUpdate = useRef(true);
 
@@ -190,8 +216,6 @@ function IdchainRegistration(props) {
         },
     ];
 
-    const [isConnected, setIsConnected] = useState(false);
-
     const [walletAddress, setWalletAddress] = useState("");
 
     const [ens, setENS] = useState("");
@@ -204,11 +228,12 @@ function IdchainRegistration(props) {
 
     const [gasBalance, setGasBalance] = useState(0.0);
 
-    const [brightIDVerification, setBrightIDVerification] = useState({
-        isBrightIDIdchainLinked: false,
-        isBrightIDLinked: false,
-        isSponsoredViaContract: false,
-    });
+    const [isBrightIDIdchainLinked, setIsBrightIDIdchainLinked] =
+        useState(false);
+
+    const [isBrightIDLinked, setIsBrightIDLinked] = useState(false);
+
+    const [isSponsoredViaContract, setIsSponsoredViaContract] = useState(false);
 
     const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(null);
 
@@ -245,43 +270,17 @@ function IdchainRegistration(props) {
     const [stepVerifyViaContractError, setStepVerifyViaContractError] =
         useState("");
 
-    function hasInstalledWallet() {
-        return true;
-    }
-
-    function hasConnectedWallet() {
-        return walletAddress !== "";
-    }
-
-    function hasBrightIDIdchainLinked() {
-        return brightIDVerification.isBrightIDIdchainLinked === true;
-    }
-
-    function hasBrightIDLinked() {
-        return brightIDVerification.isBrightIDLinked === true;
-    }
-
-    function hasSponsoredViaContract() {
-        return brightIDVerification.isSponsoredViaContract === true;
-    }
-
-    function hasVerifiedViaContract() {
-        return isVerifiedViaContract === true;
-    }
-
-    function hasSwitchedToIDChainNetwork() {
-        return chainId === Number(props.registrationChainId);
-    }
-
-    function hasObtainedGasTokens() {
-        return gasBalance !== 0 && gasBalance !== 0.0 && gasBalance !== "0.0";
-    }
-
     function timeout(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     async function getWeb3Modal() {
+        if (typeof web3Modal === "object") {
+            return web3Modal;
+        }
+
+        console.log("init web3model");
+
         const providerOptions = {
             walletconnect: {
                 package: WalletConnectProvider,
@@ -296,36 +295,106 @@ function IdchainRegistration(props) {
         providerOptions.walletconnect.options.rpc[props.registrationChainId] =
             props.registrationRpcUrl;
 
-        return new Web3Modal({
+        web3Modal = new Web3Modal({
             network: "mainnet", // optional
             cacheProvider: true, // optional
             providerOptions, // required
         });
+
+        return web3Modal;
+    }
+
+    async function initInstance(web3Modal) {
+        console.log("init instance");
+
+        const web3Instance = await web3Modal.connect();
+
+        console.log("set events");
+        web3Instance.on("accountsChanged", onAccountChange);
+        web3Instance.on("chainChanged", onChainChanged);
+
+        if (brightIDVerificationRefresh) {
+            clearInterval(brightIDVerificationRefresh);
+        }
+
+        if (contractVerificationRefresh) {
+            clearInterval(contractVerificationRefresh);
+        }
+
+        if (gasBalanceRefresh) {
+            clearInterval(gasBalanceRefresh);
+        }
+
+        brightIDVerificationRefresh = setInterval(
+            initIsBrightIDVerificationsIfNotComplete,
+            5000
+        );
+
+        contractVerificationRefresh = setInterval(
+            initIsVerifiedViaContractIfNotComplete,
+            5000
+        );
+
+        gasBalanceRefresh = setInterval(initGasBalanceIfNotComplete, 5000);
+
+        return web3Instance;
     }
 
     async function getInstance() {
-        const web3Modal = await getWeb3Modal();
-
-        return await web3Modal.connect();
-    }
-
-    async function getFreshInstance() {
-        if (getProviderType() === "walletconnect") {
-            localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
-            localStorage.removeItem("walletconnect");
+        if (typeof web3Instance === "object") {
+            return web3Instance;
         }
 
         const web3Modal = await getWeb3Modal();
 
+        web3Instance = await initInstance(web3Modal);
+
+        return web3Instance;
+    }
+
+    async function getFreshInstance() {
+        const web3Modal = await getWeb3Modal();
+
         await web3Modal.clearCachedProvider();
 
-        return await web3Modal.connect();
+        if (typeof web3Instance === "object") {
+            web3Instance.removeListener("accountsChanged", onAccountChange);
+            web3Instance.removeListener("chainChanged", onChainChanged);
+        }
+
+        if (brightIDVerificationRefresh) {
+            clearInterval(brightIDVerificationRefresh);
+        }
+
+        if (contractVerificationRefresh) {
+            clearInterval(contractVerificationRefresh);
+        }
+
+        if (gasBalanceRefresh) {
+            clearInterval(gasBalanceRefresh);
+        }
+
+        console.log("init fresh instance");
+
+        web3Instance = await initInstance(web3Modal);
+
+        return web3Instance;
     }
 
     async function getProvider() {
         const instance = await getInstance();
 
         return new ethers.providers.Web3Provider(instance);
+    }
+
+    async function queryWalletAddress() {
+        if (typeof web3Address === "string" && web3Address !== "") {
+            return web3Address;
+        }
+
+        web3Address = await checkWalletAddress();
+
+        return web3Address;
     }
 
     function getProviderType() {
@@ -366,18 +435,181 @@ function IdchainRegistration(props) {
         );
     }
 
-    function updateWalletAddress(addr) {
-        updateENS(addr);
-        setWalletAddress(addr);
-        setQrCodeUrlIdchain(`${props.deepLinkPrefix}/idchain/${addr}`);
-        setQrCodeUrl(`${props.deepLinkPrefix}/${props.context}/${addr}`);
+    /* Web3 Data Init */
+    /* ---------------------------------------------------------------------- */
+
+    async function onAccountChange() {
+        resetWalletData();
+        initWalletAddress();
+        initENS();
+        initChainId();
+        initGasBalance();
+        initIsBrightIDVerifications();
+        initIsVerifiedViaContract();
     }
 
-    async function updateENS(addr) {
-        var ens = await queryENS();
-
-        setENS(ens);
+    async function onChainChanged() {
+        await initChainId();
     }
+
+    function resetWalletData() {
+        web3Address = "";
+        web3ENS = "";
+        web3ChainId = 0;
+        web3GasBalance = 0;
+        web3IsBrightIDIdchainLinked = false;
+        web3IsBrightIDLinked = false;
+        web3IsSponsoredViaContract = false;
+        web3IsVerifiedViaContract = false;
+    }
+
+    function initIsBrightIDVerificationsIfNotComplete() {
+        if (
+            web3IsBrightIDIdchainLinked === false ||
+            web3IsBrightIDLinked === false ||
+            web3IsSponsoredViaContract === false
+        ) {
+            initIsBrightIDVerifications();
+        }
+    }
+
+    function initIsVerifiedViaContractIfNotComplete() {
+        if (web3IsVerifiedViaContract === false) {
+            initIsVerifiedViaContract();
+        }
+    }
+
+    function initGasBalanceIfNotComplete() {
+        if (web3GasBalance === 0) {
+            initGasBalance();
+        }
+    }
+
+    /* State Data Query */
+    /* ---------------------------------------------------------------------- */
+
+    function updateWalletAddressAndQRCodes(addr) {
+        setWalletAddress(web3Address);
+
+        setQrCodeUrlIdchain(`${props.deepLinkPrefix}/idchain/${web3Address}`);
+
+        setQrCodeUrl(`${props.deepLinkPrefix}/${props.context}/${web3Address}`);
+    }
+
+    async function initWalletAddress() {
+        try {
+            web3Address = await checkWalletAddress();
+
+            updateWalletAddressAndQRCodes(web3Address);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initENS() {
+        try {
+            web3ENS = await checkENS();
+
+            setENS(web3ENS);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initChainId() {
+        try {
+            web3ChainId = await checkChainId();
+
+            setChainId(web3ChainId);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initGasBalance() {
+        try {
+            web3GasBalance = await checkGasBalance();
+
+            setGasBalance(web3GasBalance);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initIsBrightIDVerifications() {
+        try {
+            const addr = await queryWalletAddress();
+
+            if (web3IsBrightIDIdchainLinked === false) {
+                web3IsBrightIDIdchainLinked = await checkBrightIDIdchainLink(
+                    addr
+                );
+
+                setIsBrightIDIdchainLinked(web3IsBrightIDIdchainLinked);
+
+                await timeout(1000);
+            }
+
+            if (web3IsBrightIDLinked === false) {
+                web3IsBrightIDLinked = await checkBrightIDLink(addr);
+
+                setIsBrightIDLinked(web3IsBrightIDLinked);
+            }
+
+            if (
+                web3IsBrightIDLinked === true &&
+                web3IsSponsoredViaContract === false
+            ) {
+                await timeout(1000);
+
+                web3IsSponsoredViaContract = await checkBrightIDSponsorship(
+                    addr
+                );
+
+                setIsSponsoredViaContract(web3IsSponsoredViaContract);
+            }
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initBrightIDSponsorship() {
+        try {
+            const addr = await queryWalletAddress();
+
+            web3IsSponsoredViaContract = await checkBrightIDSponsorship(addr);
+
+            // console.log(web3IsSponsoredViaContract);
+
+            setIsSponsoredViaContract(web3IsSponsoredViaContract);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initIsVerifiedViaContract() {
+        try {
+            const addr = await queryWalletAddress();
+
+            web3IsVerifiedViaContract = await checkBrightIDVerification(addr);
+
+            // console.log(isVerifiedViaContract);
+
+            setIsVerifiedViaContract(web3IsVerifiedViaContract);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    /* Interactive Events */
+    /* ---------------------------------------------------------------------- */
 
     // function installWallet() {
     //     window.open("https://metamask.io/", "_blank");
@@ -395,17 +627,27 @@ function IdchainRegistration(props) {
         window.open(qrCodeUrl);
     }
 
+    async function reconnectWallet() {
+        const cachedProviderName = getProviderType();
+
+        if (
+            cachedProviderName === "injected" ||
+            cachedProviderName === "walletconnect"
+        ) {
+            connectWallet();
+        }
+    }
+
     async function connectWallet() {
         try {
             await getInstance();
 
-            setIsConnected(true);
+            onAccountChange();
             setStepConnecWalletStateError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setIsConnected(false);
             setStepConnecWalletStateError(e.message);
         }
     }
@@ -414,149 +656,44 @@ function IdchainRegistration(props) {
         try {
             await getFreshInstance();
 
-            setIsConnected(true);
+            onAccountChange();
             setStepConnecWalletStateError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setIsConnected(false);
             setStepConnecWalletStateError(e.message);
         }
     }
 
-    async function queryWalletAddress() {
-        const provider = await getProvider();
-
-        const accounts = await provider.listAccounts();
-
-        if (accounts.length === 0) {
-            throw new Error("No Wallet Address Found");
-        }
-
-        return accounts[0];
-    }
-
-    async function queryENS() {
+    async function faucetClaim() {
         try {
             const addr = await queryWalletAddress();
 
-            const provider = getMainnetProvider();
+            const request = new Request(props.faucetClaimURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: JSON.stringify({ addr: addr }),
+            });
 
-            const name = await provider.lookupAddress(addr);
+            const response = await fetch(request);
 
-            // console.log(name);
+            // console.log(response);
 
-            return name;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-        }
-    }
-
-    async function initWalletAddress() {
-        try {
-            const addr = await queryWalletAddress();
-
-            // console.log(addr);
-
-            updateWalletAddress(addr);
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-        }
-    }
-
-    async function initChainId() {
-        try {
-            const provider = await getProvider();
-
-            const { chainId } = await provider.getNetwork();
-
-            // console.log(chainId);
-
-            setChainId(chainId);
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-        }
-    }
-
-    async function initGasBalance() {
-        try {
-            const addr = await queryWalletAddress();
-
-            const provider = await getIdchainProvider();
-
-            const balanceRaw = await provider.getBalance(addr);
-
-            const balance = ethers.utils.formatEther(balanceRaw);
-
-            // console.log(balance);
-
-            setGasBalance(balance);
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            setGasBalance(0);
-        }
-    }
-
-    async function initIsBrightIDVerifications() {
-        const verifications = {
-            isBrightIDIdchainLinked: hasBrightIDIdchainLinked(),
-            isBrightIDLinked: hasBrightIDLinked(),
-            isSponsoredViaContract: hasSponsoredViaContract(),
-        };
-
-        try {
-            const addr = await queryWalletAddress();
-
-            if (verifications.isBrightIDIdchainLinked === false) {
-                verifications.isBrightIDIdchainLinked =
-                    await checkBrightIDIdchainLink(addr);
-
-                await timeout(1000);
+            if (response.ok === false) {
+                throw new Error(`HTTP error, status = ${response.status}`);
             }
 
-            if (verifications.isBrightIDLinked === false) {
-                verifications.isBrightIDLinked = await checkBrightIDLink(addr);
-            }
+            setStepObtainGasTokensError("");
 
-            if (
-                verifications.isBrightIDLinked === true &&
-                verifications.isSponsoredViaContract === false
-            ) {
-                await timeout(1000);
-
-                verifications.isSponsoredViaContract =
-                    await checkBrightIDSponsorship(addr);
-            }
-
-            setBrightIDVerification(verifications);
+            return response.json();
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setBrightIDVerification(verifications);
-        }
-    }
-
-    async function initIsVerifiedViaContract() {
-        try {
-            const addr = await queryWalletAddress();
-
-            const isVerifiedViaContract = await checkBrightIDVerification(addr);
-
-            // console.log(isVerifiedViaContract);
-
-            setIsVerifiedViaContract(isVerifiedViaContract);
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            setIsVerifiedViaContract(false);
+            setStepObtainGasTokensError(e.message);
         }
     }
 
@@ -639,7 +776,7 @@ function IdchainRegistration(props) {
             // const receipt = await tx.wait();
             // // console.log(receipt);
 
-            await initIsBrightIDVerifications();
+            await initBrightIDSponsorship();
 
             setIsSponsoredViaContractTxnProcessing(false);
             setIsSponsoredViaContractTxnId(null);
@@ -702,6 +839,87 @@ function IdchainRegistration(props) {
             setIsVerifiedViaContractTxnProcessing(false);
             setIsVerifiedViaContractTxnId(null);
             setStepVerifyViaContractError(e.message);
+        }
+    }
+
+    /* Data Query */
+    /* ---------------------------------------------------------------------- */
+
+    async function checkWalletAddress() {
+        try {
+            console.log("checkWalletAddress");
+
+            const provider = await getProvider();
+
+            const accounts = await provider.listAccounts();
+
+            if (accounts.length === 0) {
+                throw new Error("No Wallet Address Found");
+            }
+
+            return accounts[0];
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+
+            return "";
+        }
+    }
+
+    async function checkENS() {
+        try {
+            console.log("checkENS");
+
+            const addr = await queryWalletAddress();
+
+            const provider = getMainnetProvider();
+
+            const name = await provider.lookupAddress(addr);
+
+            // console.log(name);
+
+            return name;
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+
+            return "";
+        }
+    }
+
+    async function checkChainId() {
+        try {
+            console.log("checkChainId");
+
+            const provider = await getProvider();
+
+            const { chainId } = await provider.getNetwork();
+
+            return chainId;
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+
+            return 0;
+        }
+    }
+
+    async function checkGasBalance() {
+        try {
+            console.log("checkGas");
+
+            const addr = await queryWalletAddress();
+
+            const provider = await getIdchainProvider();
+
+            const balanceRaw = await provider.getBalance(addr);
+
+            return ethers.utils.formatEther(balanceRaw);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+
+            return 0;
         }
     }
 
@@ -835,36 +1053,43 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function faucetClaim() {
-        try {
-            const addr = await queryWalletAddress();
+    /* Step State Checks */
+    /* ---------------------------------------------------------------------- */
 
-            const request = new Request(props.faucetClaimURL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-                body: JSON.stringify({ addr: addr }),
-            });
-
-            const response = await fetch(request);
-
-            // console.log(response);
-
-            if (response.ok === false) {
-                throw new Error(`HTTP error, status = ${response.status}`);
-            }
-
-            setStepObtainGasTokensError("");
-
-            return response.json();
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            setStepObtainGasTokensError(e.message);
-        }
+    function hasInstalledWallet() {
+        return true;
     }
+
+    function hasConnectedWallet() {
+        return walletAddress !== "";
+    }
+
+    function hasBrightIDIdchainLinked() {
+        return isBrightIDIdchainLinked === true;
+    }
+
+    function hasBrightIDLinked() {
+        return isBrightIDLinked === true;
+    }
+
+    function hasSponsoredViaContract() {
+        return isSponsoredViaContract === true;
+    }
+
+    function hasVerifiedViaContract() {
+        return isVerifiedViaContract === true;
+    }
+
+    function hasSwitchedToIDChainNetwork() {
+        return chainId === Number(props.registrationChainId);
+    }
+
+    function hasObtainedGasTokens() {
+        return gasBalance !== 0 && gasBalance !== 0.0 && gasBalance !== "0.0";
+    }
+
+    /* Step Completion Flags */
+    /* ---------------------------------------------------------------------- */
 
     function stepInstallWalletStateComplete() {
         if (hasInstalledWallet() === true) {
@@ -929,6 +1154,9 @@ function IdchainRegistration(props) {
 
         return "incomplete";
     }
+
+    /* Step Active Flags */
+    /* ---------------------------------------------------------------------- */
 
     function stepInstallWalletStateActive() {
         return "active";
@@ -1011,102 +1239,8 @@ function IdchainRegistration(props) {
         return "inactive";
     }
 
-    async function onAccountChange() {
-        setBrightIDVerification({
-            isBrightIDIdchainLinked: false,
-            isBrightIDLinked: false,
-            isSponsoredViaContract: false,
-        });
-
-        setIsVerifiedViaContract(false);
-
-        await initWalletAddress();
-        await initChainId();
-        await initGasBalance();
-    }
-
-    async function onChainChanged() {
-        await initChainId();
-    }
-
-    async function attachProviderListeners() {
-        // console.log("attach listeners");
-
-        const provider = await getInstance();
-
-        provider.on("accountsChanged", onAccountChange);
-        provider.on("chainChanged", onChainChanged);
-    }
-
-    async function detachProviderListeners() {
-        // console.log("remove listeners");
-
-        const provider = await getInstance();
-
-        provider.removeListener("accountsChanged", onAccountChange);
-        provider.removeListener("chainChanged", onChainChanged);
-    }
-
-    useEffect(() => {
-        if (isConnected === false) {
-            return;
-        }
-
-        if (
-            brightIDVerification.isBrightIDIdchainLinked === true &&
-            brightIDVerification.isBrightIDLinked === true &&
-            brightIDVerification.isSponsoredViaContract === true
-        ) {
-            return;
-        }
-
-        initIsBrightIDVerifications();
-
-        const remoteVerificationRefresh = setInterval(
-            initIsBrightIDVerifications,
-            5000
-        );
-
-        return () => {
-            clearInterval(remoteVerificationRefresh);
-        };
-    }, [brightIDVerification]); // eslint-disable-line
-
-    useEffect(() => {
-        if (isConnected === false) {
-            return;
-        }
-
-        if (isVerifiedViaContract === true) {
-            return;
-        }
-
-        initIsVerifiedViaContract();
-
-        const remoteVerificationRefresh = setInterval(
-            initIsVerifiedViaContract,
-            5000
-        );
-
-        return () => {
-            clearInterval(remoteVerificationRefresh);
-        };
-    }, [isVerifiedViaContract]); // eslint-disable-line
-
-    useEffect(() => {
-        if (isConnected === false) {
-            return;
-        }
-
-        onAccountChange();
-        attachProviderListeners();
-        const monitorGasBalance = setInterval(initGasBalance, 5000);
-
-        return () => {
-            detachProviderListeners();
-            clearInterval(monitorGasBalance);
-        };
-    }, [isConnected]); // eslint-disable-line
+    /* Connect on Bootup */
+    /* ---------------------------------------------------------------------- */
 
     useEffect(() => {
         if (firstUpdate.current === false) {
@@ -1117,24 +1251,11 @@ function IdchainRegistration(props) {
             firstUpdate.current = false;
         }
 
-        const cachedProviderName = getProviderType();
-
-        if (
-            cachedProviderName === "injected" ||
-            cachedProviderName === "walletconnect"
-        ) {
-            connectWallet();
-        }
-
-        // if (cachedProviderName === "injected") {
-        //     connectWallet();
-        // }
-
-        // if (cachedProviderName === "walletconnect") {
-        //     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
-        //     localStorage.removeItem("walletconnect");
-        // }
+        reconnectWallet();
     });
+
+    /* Template */
+    /* ---------------------------------------------------------------------- */
 
     return (
         <div className="idchain-registration">
