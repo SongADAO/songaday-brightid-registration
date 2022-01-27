@@ -1009,6 +1009,8 @@ function IdchainRegistration(props) {
 
     async function checkBrightIDVerification(contextId) {
         try {
+            console.log("checkBrightIDVerification");
+
             const addr = await queryWalletAddress();
 
             const contract = await getIdchainProviderContract();
