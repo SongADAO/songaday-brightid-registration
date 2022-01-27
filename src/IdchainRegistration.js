@@ -253,8 +253,7 @@ function IdchainRegistration(props) {
     const [isVerifiedViaContractTxnId, setIsVerifiedViaContractTxnId] =
         useState(null);
 
-    const [stepConnecWalletStateError, setStepConnecWalletStateError] =
-        useState("");
+    const [stepConnecWalletError, setStepConnecWalletError] = useState("");
 
     const [
         stepSwitchToIDChainNetworkError,
@@ -643,12 +642,12 @@ function IdchainRegistration(props) {
             await getInstance();
 
             onAccountChange();
-            setStepConnecWalletStateError("");
+            setStepConnecWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setStepConnecWalletStateError(e.message);
+            setStepConnecWalletError(e.message);
         }
     }
 
@@ -657,12 +656,12 @@ function IdchainRegistration(props) {
             await getFreshInstance();
 
             onAccountChange();
-            setStepConnecWalletStateError("");
+            setStepConnecWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setStepConnecWalletStateError(e.message);
+            setStepConnecWalletError(e.message);
         }
     }
 
@@ -1093,152 +1092,88 @@ function IdchainRegistration(props) {
     /* Step Completion Flags */
     /* ---------------------------------------------------------------------- */
 
-    function stepInstallWalletStateComplete() {
-        if (hasInstalledWallet() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+    function getStepCompleteString(status) {
+        return status === true ? "complete" : "incomplete";
     }
 
-    function stepConnecWalletStateComplete() {
-        if (hasConnectedWallet() === true) {
-            return "complete";
-        }
+    function stepInstallWalletComplete() {
+        return hasInstalledWallet();
+    }
 
-        return "incomplete";
+    function stepConnecWalletComplete() {
+        return hasConnectedWallet();
     }
 
     function stepBrightIDLinkedIdchainComplete() {
-        if (hasBrightIDIdchainLinked() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasBrightIDIdchainLinked();
     }
 
     function stepBrightIDLinkedComplete() {
-        if (hasBrightIDLinked() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasBrightIDLinked();
     }
 
     function stepSwitchToIDChainNetworkComplete() {
-        if (hasSwitchedToIDChainNetwork() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasSwitchedToIDChainNetwork();
     }
 
     function stepObtainGasTokensComplete() {
-        if (hasObtainedGasTokens() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasObtainedGasTokens();
     }
 
     function stepSponsoredViaContractComplete() {
-        if (hasSponsoredViaContract() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasSponsoredViaContract();
     }
 
     function stepVerifyViaContractComplete() {
-        if (hasVerifiedViaContract() === true) {
-            return "complete";
-        }
-
-        return "incomplete";
+        return hasVerifiedViaContract();
     }
 
     /* Step Active Flags */
     /* ---------------------------------------------------------------------- */
 
-    function stepInstallWalletStateActive() {
-        return "active";
+    function getStepActiveString(status) {
+        return status === true ? "active" : "inactive";
     }
 
-    function stepConnecWalletStateActive() {
-        if (
-            stepInstallWalletStateComplete() === "complete" &&
-            stepInstallWalletStateActive() === "active"
-        ) {
-            return "active";
-        }
+    function stepInstallWalletActive() {
+        return true;
+    }
 
-        return "inactive";
+    function stepConnecWalletActive() {
+        return stepInstallWalletComplete() && stepInstallWalletActive();
     }
 
     function stepBrightIDLinkedIdchainActive() {
-        if (
-            stepConnecWalletStateComplete() === "complete" &&
-            stepConnecWalletStateActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return stepConnecWalletComplete() && stepConnecWalletActive();
     }
 
     function stepBrightIDLinkedActive() {
-        if (
-            stepBrightIDLinkedIdchainComplete() === "complete" &&
-            stepBrightIDLinkedIdchainActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return (
+            stepBrightIDLinkedIdchainComplete() &&
+            stepBrightIDLinkedIdchainActive()
+        );
     }
 
     function stepSwitchToIDChainNetworkActive() {
-        if (
-            stepBrightIDLinkedComplete() === "complete" &&
-            stepBrightIDLinkedActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return stepBrightIDLinkedComplete() && stepBrightIDLinkedActive();
     }
 
     function stepObtainGasTokensActive() {
-        if (
-            stepSwitchToIDChainNetworkComplete() === "complete" &&
-            stepSwitchToIDChainNetworkActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return (
+            stepSwitchToIDChainNetworkComplete() &&
+            stepSwitchToIDChainNetworkActive()
+        );
     }
 
     function stepSponsoredViaContractActive() {
-        if (
-            stepObtainGasTokensComplete() === "complete" &&
-            stepObtainGasTokensActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return stepObtainGasTokensComplete() && stepObtainGasTokensActive();
     }
 
     function stepVerifyViaContractActive() {
-        if (
-            stepSponsoredViaContractComplete() === "complete" &&
-            stepSponsoredViaContractActive() === "active"
-        ) {
-            return "active";
-        }
-
-        return "inactive";
+        return (
+            stepSponsoredViaContractComplete() &&
+            stepSponsoredViaContractActive()
+        );
     }
 
     /* Connect on Bootup */
@@ -1332,8 +1267,12 @@ function IdchainRegistration(props) {
                     className={`
                         idchain-registration-step
                         idchain-registration-step--install
-                        idchain-registration-step--${stepInstallWalletStateComplete()}
-                        idchain-registration-step--${stepInstallWalletStateActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepInstallWalletComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepInstallWalletActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1359,8 +1298,12 @@ function IdchainRegistration(props) {
                     className={`
                         idchain-registration-step
                         idchain-registration-step--connect
-                        idchain-registration-step--${stepConnecWalletStateComplete()}
-                        idchain-registration-step--${stepConnecWalletStateActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepConnecWalletComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepConnecWalletActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1406,9 +1349,9 @@ function IdchainRegistration(props) {
                         )}
                     </div>
                     <div className="idchain-registration-step__feedback">
-                        {stepConnecWalletStateError && (
+                        {stepConnecWalletError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                {stepConnecWalletStateError}
+                                {stepConnecWalletError}
                             </div>
                         )}
                     </div>
@@ -1417,8 +1360,12 @@ function IdchainRegistration(props) {
                     className={`
                         idchain-registration-step
                         idchain-registration-step--brightid-link-idchain
-                        idchain-registration-step--${stepBrightIDLinkedIdchainComplete()}
-                        idchain-registration-step--${stepBrightIDLinkedIdchainActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepBrightIDLinkedIdchainComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepBrightIDLinkedIdchainActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1476,8 +1423,12 @@ function IdchainRegistration(props) {
                     className={`
                         idchain-registration-step
                         idchain-registration-step--brightid-link
-                        idchain-registration-step--${stepBrightIDLinkedComplete()}
-                        idchain-registration-step--${stepBrightIDLinkedActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepBrightIDLinkedComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepBrightIDLinkedActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1534,8 +1485,12 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepSwitchToIDChainNetworkComplete()}
-                        idchain-registration-step--${stepSwitchToIDChainNetworkActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepSwitchToIDChainNetworkComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepSwitchToIDChainNetworkActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1603,8 +1558,12 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepObtainGasTokensComplete()}
-                        idchain-registration-step--${stepObtainGasTokensActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepObtainGasTokensComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepObtainGasTokensActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1644,8 +1603,12 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepSponsoredViaContractComplete()}
-                        idchain-registration-step--${stepSponsoredViaContractActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepSponsoredViaContractComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepSponsoredViaContractActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
@@ -1715,8 +1678,12 @@ function IdchainRegistration(props) {
                 <section
                     className={`
                         idchain-registration-step
-                        idchain-registration-step--${stepVerifyViaContractComplete()}
-                        idchain-registration-step--${stepVerifyViaContractActive()}
+                        idchain-registration-step--${getStepCompleteString(
+                            stepVerifyViaContractComplete()
+                        )}
+                        idchain-registration-step--${getStepActiveString(
+                            stepVerifyViaContractActive()
+                        )}
                     `}
                 >
                     <div className="idchain-registration-step__main">
