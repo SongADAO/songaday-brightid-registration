@@ -3,230 +3,31 @@ import appStore from "./app-store.png";
 import "./IdchainRegistration.css";
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode.react";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import IdchainRegistrationModel from "./IdchainRegistrationModel";
 
-let brightIDVerificationRefresh = 0;
+let registration;
 
-let contractVerificationRefresh = 0;
-
-let gasBalanceRefresh = 0;
-
-let web3Modal;
-
-let web3Instance;
-
-let web3Address = "";
-
-let web3ENS = "";
-
-let web3ChainId = 0;
-
-let web3GasBalance = 0;
-
-let web3IsBrightIDIdchainLinked = false;
-
-let web3IsBrightIDLinked = false;
-
-let web3IsSponsoredViaContract = false;
-
-let web3IsVerifiedViaContract = false;
+let changePollingInterval = 0;
 
 function IdchainRegistration(props) {
-    const firstUpdate = useRef(true);
+    /* State */
+    /* ---------------------------------------------------------------------- */
 
-    const contractAbi = [
-        {
-            type: "constructor",
-            stateMutability: "nonpayable",
-            inputs: [
-                {
-                    type: "address",
-                    name: "_verifierToken",
-                    internalType: "contract IERC20",
-                },
-                { type: "bytes32", name: "_app", internalType: "bytes32" },
-            ],
-        },
-        {
-            type: "event",
-            name: "OwnershipTransferred",
-            inputs: [
-                {
-                    type: "address",
-                    name: "previousOwner",
-                    internalType: "address",
-                    indexed: true,
-                },
-                {
-                    type: "address",
-                    name: "newOwner",
-                    internalType: "address",
-                    indexed: true,
-                },
-            ],
-            anonymous: false,
-        },
-        {
-            type: "event",
-            name: "Sponsor",
-            inputs: [
-                {
-                    type: "address",
-                    name: "addr",
-                    internalType: "address",
-                    indexed: true,
-                },
-            ],
-            anonymous: false,
-        },
-        {
-            type: "event",
-            name: "Verified",
-            inputs: [
-                {
-                    type: "address",
-                    name: "addr",
-                    internalType: "address",
-                    indexed: true,
-                },
-            ],
-            anonymous: false,
-        },
-        {
-            type: "event",
-            name: "VerifierTokenSet",
-            inputs: [
-                {
-                    type: "address",
-                    name: "verifierToken",
-                    internalType: "contract IERC20",
-                    indexed: false,
-                },
-            ],
-            anonymous: false,
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [{ type: "uint32", name: "", internalType: "uint32" }],
-            name: "REGISTRATION_PERIOD",
-            inputs: [],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [{ type: "bytes32", name: "", internalType: "bytes32" }],
-            name: "app",
-            inputs: [],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [{ type: "address", name: "", internalType: "address" }],
-            name: "history",
-            inputs: [{ type: "address", name: "", internalType: "address" }],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [{ type: "bool", name: "", internalType: "bool" }],
-            name: "isVerifiedUser",
-            inputs: [
-                { type: "address", name: "_user", internalType: "address" },
-            ],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [{ type: "address", name: "", internalType: "address" }],
-            name: "owner",
-            inputs: [],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
-            name: "renounceOwnership",
-            inputs: [],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
-            name: "setVerifierToken",
-            inputs: [
-                {
-                    type: "address",
-                    name: "_verifierToken",
-                    internalType: "contract IERC20",
-                },
-            ],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
-            name: "sponsor",
-            inputs: [
-                { type: "address", name: "addr", internalType: "address" },
-            ],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
-            name: "transferOwnership",
-            inputs: [
-                { type: "address", name: "newOwner", internalType: "address" },
-            ],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [
-                { type: "uint256", name: "time", internalType: "uint256" },
-                { type: "bool", name: "isVerified", internalType: "bool" },
-            ],
-            name: "verifications",
-            inputs: [{ type: "address", name: "", internalType: "address" }],
-        },
-        {
-            type: "function",
-            stateMutability: "view",
-            outputs: [
-                { type: "address", name: "", internalType: "contract IERC20" },
-            ],
-            name: "verifierToken",
-            inputs: [],
-        },
-        {
-            type: "function",
-            stateMutability: "nonpayable",
-            outputs: [],
-            name: "verify",
-            inputs: [
-                { type: "address[]", name: "addrs", internalType: "address[]" },
-                { type: "uint256", name: "timestamp", internalType: "uint256" },
-                { type: "uint8", name: "v", internalType: "uint8" },
-                { type: "bytes32", name: "r", internalType: "bytes32" },
-                { type: "bytes32", name: "s", internalType: "bytes32" },
-            ],
-        },
-    ];
+    const firstUpdate = useRef(true);
 
     const [walletAddress, setWalletAddress] = useState("");
 
-    const [ens, setENS] = useState("");
-
-    const [qrCodeUrlIdchain, setQrCodeUrlIdchain] = useState("");
-
-    const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [ensName, setENSName] = useState("");
 
     const [chainId, setChainId] = useState("");
 
     const [gasBalance, setGasBalance] = useState(0.0);
+
+    const [canAutoSwitchNetworks, setCanAutoSwitchNetworks] = useState(false);
+
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
+
+    const [qrCodeIdchainUrl, setQrCodeIdchainUrl] = useState("");
 
     const [isBrightIDIdchainLinked, setIsBrightIDIdchainLinked] =
         useState(false);
@@ -235,7 +36,7 @@ function IdchainRegistration(props) {
 
     const [isSponsoredViaContract, setIsSponsoredViaContract] = useState(false);
 
-    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(null);
+    const [isVerifiedViaContract, setIsVerifiedViaContract] = useState(false);
 
     const [
         isSponsoredViaContractTxnProcessing,
@@ -269,248 +70,106 @@ function IdchainRegistration(props) {
     const [stepVerifyViaContractError, setStepVerifyViaContractError] =
         useState("");
 
+    /* Util */
+    /* ---------------------------------------------------------------------- */
+
     function timeout(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    async function getWeb3Modal() {
-        if (typeof web3Modal === "object") {
-            return web3Modal;
-        }
-
-        console.log("init web3model");
-
-        const providerOptions = {
-            walletconnect: {
-                package: WalletConnectProvider,
-                options: {
-                    infuraId: props.walletConnectInfuraId, // required
-                    rpc: {},
-                    // network: props.registrationChainName,
-                },
-            },
-        };
-
-        providerOptions.walletconnect.options.rpc[props.registrationChainId] =
-            props.registrationRpcUrl;
-
-        web3Modal = new Web3Modal({
-            network: "mainnet", // optional
-            cacheProvider: true, // optional
-            providerOptions, // required
-        });
-
-        return web3Modal;
-    }
-
-    async function initInstance(web3Modal) {
-        console.log("init instance");
-
-        const web3Instance = await web3Modal.connect();
-
-        console.log("set events");
-        web3Instance.on("accountsChanged", onAccountChange);
-        web3Instance.on("chainChanged", onChainChanged);
-
-        if (brightIDVerificationRefresh) {
-            clearInterval(brightIDVerificationRefresh);
-        }
-
-        if (contractVerificationRefresh) {
-            clearInterval(contractVerificationRefresh);
-        }
-
-        if (gasBalanceRefresh) {
-            clearInterval(gasBalanceRefresh);
-        }
-
-        brightIDVerificationRefresh = setInterval(
-            initIsBrightIDVerificationsIfNotComplete,
-            5000
-        );
-
-        contractVerificationRefresh = setInterval(
-            initIsVerifiedViaContractIfNotComplete,
-            5000
-        );
-
-        gasBalanceRefresh = setInterval(initGasBalanceIfNotComplete, 5000);
-
-        return web3Instance;
-    }
-
-    async function getInstance() {
-        if (typeof web3Instance === "object") {
-            return web3Instance;
-        }
-
-        const web3Modal = await getWeb3Modal();
-
-        web3Instance = await initInstance(web3Modal);
-
-        return web3Instance;
-    }
-
-    async function getFreshInstance() {
-        const web3Modal = await getWeb3Modal();
-
-        await web3Modal.clearCachedProvider();
-
-        if (typeof web3Instance === "object") {
-            web3Instance.removeListener("accountsChanged", onAccountChange);
-            web3Instance.removeListener("chainChanged", onChainChanged);
-        }
-
-        if (brightIDVerificationRefresh) {
-            clearInterval(brightIDVerificationRefresh);
-        }
-
-        if (contractVerificationRefresh) {
-            clearInterval(contractVerificationRefresh);
-        }
-
-        if (gasBalanceRefresh) {
-            clearInterval(gasBalanceRefresh);
-        }
-
-        console.log("init fresh instance");
-
-        web3Instance = await initInstance(web3Modal);
-
-        return web3Instance;
-    }
-
-    async function getProvider() {
-        const instance = await getInstance();
-
-        return new ethers.providers.Web3Provider(instance);
-    }
-
-    async function queryWalletAddress() {
-        if (typeof web3Address === "string" && web3Address !== "") {
-            return web3Address;
-        }
-
-        web3Address = await checkWalletAddress();
-
-        return web3Address;
-    }
-
-    function getProviderType() {
-        return JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
-    }
-
-    function canAutoSwitchNetworks() {
-        return getProviderType() !== "walletconnect";
-    }
-
-    function getMainnetProvider() {
-        return new ethers.providers.JsonRpcProvider(props.mainnetRpcUrl);
-    }
-
-    function getIdchainProvider() {
-        return new ethers.providers.JsonRpcProvider(props.registrationRpcUrl);
-    }
-
-    async function getIdchainProviderContract() {
-        const provider = await getIdchainProvider();
-
-        return new ethers.Contract(props.contractAddr, contractAbi, provider);
-    }
-
-    // async function getContract() {
-    //     const provider = await getProvider();
-
-    //     return new ethers.Contract(props.contractAddr, contractAbi, provider);
-    // }
-
-    async function getContractRw() {
-        const provider = await getProvider();
-
-        return new ethers.Contract(
-            props.contractAddr,
-            contractAbi,
-            provider.getSigner()
-        );
-    }
-
-    /* Web3 Data Init */
+    /* Web3 Data Init & Monitoring */
     /* ---------------------------------------------------------------------- */
 
     async function onAccountChange() {
-        resetWalletData();
+        registration.resetWalletData();
         initWalletAddress();
-        initENS();
+        initENSName();
         initChainId();
         initGasBalance();
+        initCanAutoSwitchNetworks();
+        initQrCodeUrl();
+        initQrCodeIdchainUrl();
         initIsBrightIDVerifications();
         initIsVerifiedViaContract();
     }
 
-    async function onChainChanged() {
-        await initChainId();
+    function onChainChanged() {
+        initChainId();
     }
 
-    function resetWalletData() {
-        web3Address = "";
-        web3ENS = "";
-        web3ChainId = 0;
-        web3GasBalance = 0;
-        web3IsBrightIDIdchainLinked = false;
-        web3IsBrightIDLinked = false;
-        web3IsSponsoredViaContract = false;
-        web3IsVerifiedViaContract = false;
-    }
+    function onChangePolling() {
+        if (registration.gasBalance === 0) {
+            initGasBalance();
+        }
 
-    function initIsBrightIDVerificationsIfNotComplete() {
         if (
-            web3IsBrightIDIdchainLinked === false ||
-            web3IsBrightIDLinked === false ||
-            web3IsSponsoredViaContract === false
+            registration.isBrightIDIdchainLinked === false ||
+            registration.isBrightIDLinked === false ||
+            registration.isSponsoredViaContract === false
         ) {
             initIsBrightIDVerifications();
         }
-    }
 
-    function initIsVerifiedViaContractIfNotComplete() {
-        if (web3IsVerifiedViaContract === false) {
+        if (
+            registration.isBrightIDLinked === true &&
+            registration.isSponsoredViaContract === true &&
+            registration.isVerifiedViaContract === false
+        ) {
             initIsVerifiedViaContract();
         }
     }
 
-    function initGasBalanceIfNotComplete() {
-        if (web3GasBalance === 0) {
-            initGasBalance();
+    function removeEvents() {
+        console.log("remove events");
+
+        if (typeof registration.web3Instance === "object") {
+            registration.web3Instance.removeListener(
+                "accountsChanged",
+                onAccountChange
+            );
+
+            registration.web3Instance.removeListener(
+                "chainChanged",
+                onChainChanged
+            );
         }
+
+        if (changePollingInterval) {
+            clearInterval(changePollingInterval);
+        }
+    }
+
+    function addEvents() {
+        console.log("add events");
+
+        if (typeof registration.web3Instance === "object") {
+            registration.web3Instance.on("accountsChanged", onAccountChange);
+
+            registration.web3Instance.on("chainChanged", onChainChanged);
+        }
+
+        changePollingInterval = setInterval(onChangePolling, 5000);
     }
 
     /* State Data Query */
     /* ---------------------------------------------------------------------- */
 
-    function updateWalletAddressAndQRCodes(addr) {
-        setWalletAddress(web3Address);
-
-        setQrCodeUrlIdchain(`${props.deepLinkPrefix}/idchain/${web3Address}`);
-
-        setQrCodeUrl(`${props.deepLinkPrefix}/${props.context}/${web3Address}`);
-    }
-
     async function initWalletAddress() {
         try {
-            web3Address = await checkWalletAddress();
+            const walletAddress = await registration.initWalletAddress();
 
-            updateWalletAddressAndQRCodes(web3Address);
+            setWalletAddress(walletAddress);
         } catch (e) {
             // console.error(e);
             // console.log(e);
         }
     }
 
-    async function initENS() {
+    async function initENSName() {
         try {
-            web3ENS = await checkENS();
+            const ensName = await registration.initENSName();
 
-            setENS(web3ENS);
+            setENSName(ensName);
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -519,9 +178,9 @@ function IdchainRegistration(props) {
 
     async function initChainId() {
         try {
-            web3ChainId = await checkChainId();
+            const chainId = await registration.initChainId();
 
-            setChainId(web3ChainId);
+            setChainId(chainId);
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -530,9 +189,43 @@ function IdchainRegistration(props) {
 
     async function initGasBalance() {
         try {
-            web3GasBalance = await checkGasBalance();
+            const gasBalance = await registration.initGasBalance();
 
-            setGasBalance(web3GasBalance);
+            setGasBalance(gasBalance);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initCanAutoSwitchNetworks() {
+        try {
+            const canAutoSwitchNetworks =
+                await registration.canAutoSwitchNetworks();
+
+            setCanAutoSwitchNetworks(canAutoSwitchNetworks);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initQrCodeUrl() {
+        try {
+            const qrCodeUrl = await registration.getQrCodeUrl();
+
+            setQrCodeUrl(qrCodeUrl);
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
+    async function initQrCodeIdchainUrl() {
+        try {
+            const qrCodeUrl = await registration.getQrCodeIdchainUrl();
+
+            setQrCodeIdchainUrl(qrCodeUrl);
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -541,35 +234,32 @@ function IdchainRegistration(props) {
 
     async function initIsBrightIDVerifications() {
         try {
-            const addr = await queryWalletAddress();
+            if (registration.isBrightIDIdchainLinked === false) {
+                const isBrightIDIdchainLinked =
+                    await registration.initIsBrightIDIdchainLinked();
 
-            if (web3IsBrightIDIdchainLinked === false) {
-                web3IsBrightIDIdchainLinked = await checkBrightIDIdchainLink(
-                    addr
-                );
-
-                setIsBrightIDIdchainLinked(web3IsBrightIDIdchainLinked);
+                setIsBrightIDIdchainLinked(isBrightIDIdchainLinked);
 
                 await timeout(1000);
             }
 
-            if (web3IsBrightIDLinked === false) {
-                web3IsBrightIDLinked = await checkBrightIDLink(addr);
+            if (registration.isBrightIDLinked === false) {
+                const isBrightIDLinked =
+                    await registration.initIsBrightIDLinked();
 
-                setIsBrightIDLinked(web3IsBrightIDLinked);
+                setIsBrightIDLinked(isBrightIDLinked);
             }
 
             if (
-                web3IsBrightIDLinked === true &&
-                web3IsSponsoredViaContract === false
+                registration.isBrightIDLinked === true &&
+                registration.isSponsoredViaContract === false
             ) {
                 await timeout(1000);
 
-                web3IsSponsoredViaContract = await checkBrightIDSponsorship(
-                    addr
-                );
+                const isSponsoredViaContract =
+                    await registration.initIsSponsoredViaContract();
 
-                setIsSponsoredViaContract(web3IsSponsoredViaContract);
+                setIsSponsoredViaContract(isSponsoredViaContract);
             }
         } catch (e) {
             // console.error(e);
@@ -577,15 +267,14 @@ function IdchainRegistration(props) {
         }
     }
 
-    async function initBrightIDSponsorship() {
+    async function initIsSponsoredViaContract() {
         try {
-            const addr = await queryWalletAddress();
+            const isSponsoredViaContract =
+                await registration.initIsSponsoredViaContract();
 
-            web3IsSponsoredViaContract = await checkBrightIDSponsorship(addr);
+            // console.log(isSponsoredViaContract);
 
-            // console.log(web3IsSponsoredViaContract);
-
-            setIsSponsoredViaContract(web3IsSponsoredViaContract);
+            setIsSponsoredViaContract(isSponsoredViaContract);
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -594,13 +283,12 @@ function IdchainRegistration(props) {
 
     async function initIsVerifiedViaContract() {
         try {
-            const addr = await queryWalletAddress();
-
-            web3IsVerifiedViaContract = await checkBrightIDVerification(addr);
+            const isVerifiedViaContract =
+                await registration.initIsVerifiedViaContract();
 
             // console.log(isVerifiedViaContract);
 
-            setIsVerifiedViaContract(web3IsVerifiedViaContract);
+            setIsVerifiedViaContract(isVerifiedViaContract);
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -610,37 +298,31 @@ function IdchainRegistration(props) {
     /* Interactive Events */
     /* ---------------------------------------------------------------------- */
 
-    // function installWallet() {
-    //     window.open("https://metamask.io/", "_blank");
-    // }
-
     function verifyWithBrightID() {
         window.open(props.brightIdMeetUrl, "_blank");
     }
 
     function linkAddressToBrightIDIdchain() {
-        window.open(qrCodeUrlIdchain);
+        window.open(qrCodeIdchainUrl);
     }
 
     function linkAddressToBrightID() {
         window.open(qrCodeUrl);
     }
 
-    async function reconnectWallet() {
-        const cachedProviderName = getProviderType();
-
-        if (
-            cachedProviderName === "injected" ||
-            cachedProviderName === "walletconnect"
-        ) {
+    function reconnectWallet() {
+        if (registration.hasReconnectableWallet()) {
             connectWallet();
         }
     }
 
     async function connectWallet() {
         try {
-            await getInstance();
+            removeEvents();
 
+            await registration.connectWallet();
+
+            addEvents();
             onAccountChange();
             setStepConnecWalletError("");
         } catch (e) {
@@ -653,8 +335,11 @@ function IdchainRegistration(props) {
 
     async function chooseWallet() {
         try {
-            await getFreshInstance();
+            removeEvents();
 
+            await registration.chooseWallet();
+
+            addEvents();
             onAccountChange();
             setStepConnecWalletError("");
         } catch (e) {
@@ -667,27 +352,13 @@ function IdchainRegistration(props) {
 
     async function faucetClaim() {
         try {
-            const addr = await queryWalletAddress();
-
-            const request = new Request(props.faucetClaimURL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-                body: JSON.stringify({ addr: addr }),
-            });
-
-            const response = await fetch(request);
-
-            // console.log(response);
+            const response = await registration.faucetClaim();
 
             if (response.ok === false) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
 
             setStepObtainGasTokensError("");
-
-            return response.json();
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -697,17 +368,8 @@ function IdchainRegistration(props) {
     }
 
     async function switchToIDChainNetwork() {
-        const registrationHexChainId = ethers.utils.hexlify(
-            Number(props.registrationChainId)
-        );
-
         try {
-            const provider = await getProvider();
-
-            await provider.provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: registrationHexChainId }],
-            });
+            await registration.switchToIDChainNetwork();
 
             setStepSwitchToIDChainNetworkError("");
         } catch (switchError) {
@@ -715,38 +377,7 @@ function IdchainRegistration(props) {
 
             // This error code indicates that the chain has not been added to MetaMask.
             if (switchError.code === 4902) {
-                try {
-                    const provider = await getProvider();
-
-                    await provider.provider.request({
-                        method: "wallet_addEthereumChain",
-                        params: [
-                            {
-                                chainId: registrationHexChainId,
-                                chainName: props.registrationChainName,
-                                nativeCurrency: {
-                                    name: props.registrationTokenName,
-                                    symbol: props.registrationTokenName,
-                                    decimals: Number(
-                                        props.registrationTokenDecimal
-                                    ),
-                                },
-                                rpcUrls: [props.registrationRpcUrl],
-                                blockExplorerUrls: [
-                                    props.registrationBlockExplorerUrl,
-                                ],
-                                iconUrls: [props.registrationIconUrl],
-                            },
-                        ],
-                    });
-
-                    setStepSwitchToIDChainNetworkError("");
-                } catch (addError) {
-                    // console.error(addError);
-                    // console.log(addError);
-
-                    setStepSwitchToIDChainNetworkError(addError.message);
-                }
+                addIDChainNetwork();
 
                 return;
             }
@@ -758,13 +389,22 @@ function IdchainRegistration(props) {
         }
     }
 
+    async function addIDChainNetwork() {
+        try {
+            await registration.addIDChainNetwork();
+
+            setStepSwitchToIDChainNetworkError("");
+        } catch (addError) {
+            // console.error(addError);
+            // console.log(addError);
+
+            setStepSwitchToIDChainNetworkError(addError.message);
+        }
+    }
+
     async function sponsorViaContract() {
         try {
-            const addr = await queryWalletAddress();
-
-            const contract = await getContractRw();
-
-            const tx = await contract.sponsor(addr);
+            const tx = await registration.sponsorViaContract();
 
             setIsSponsoredViaContractTxnProcessing(true);
             setIsSponsoredViaContractTxnId(tx.hash);
@@ -775,7 +415,7 @@ function IdchainRegistration(props) {
             // const receipt = await tx.wait();
             // // console.log(receipt);
 
-            await initBrightIDSponsorship();
+            await initIsSponsoredViaContract();
 
             setIsSponsoredViaContractTxnProcessing(false);
             setIsSponsoredViaContractTxnId(null);
@@ -792,28 +432,7 @@ function IdchainRegistration(props) {
 
     async function verifyViaContract() {
         try {
-            const addr = await queryWalletAddress();
-
-            const verificationData = await getBrightIDSignature(addr);
-
-            const contract = await getContractRw();
-
-            // const addrs = [addr];
-            const addrs = verificationData.data.contextIds;
-            const timestamp = verificationData.data.timestamp;
-            const v = verificationData.data.sig.v;
-            const r = "0x" + verificationData.data.sig.r;
-            const s = "0x" + verificationData.data.sig.s;
-
-            // // console.log("-------------------------------");
-            // // console.log(addrs);
-            // // console.log(timestamp);
-            // // console.log(v);
-            // // console.log(r);
-            // // console.log(s);
-            // // console.log("-------------------------------");
-
-            const tx = await contract.verify(addrs, timestamp, v, r, s);
+            const tx = await registration.verifyViaContract();
 
             setIsVerifiedViaContractTxnProcessing(true);
             setIsVerifiedViaContractTxnId(tx.hash);
@@ -841,225 +460,8 @@ function IdchainRegistration(props) {
         }
     }
 
-    /* Data Query */
-    /* ---------------------------------------------------------------------- */
-
-    async function checkWalletAddress() {
-        try {
-            console.log("checkWalletAddress");
-
-            const provider = await getProvider();
-
-            const accounts = await provider.listAccounts();
-
-            if (accounts.length === 0) {
-                throw new Error("No Wallet Address Found");
-            }
-
-            return accounts[0];
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return "";
-        }
-    }
-
-    async function checkENS() {
-        try {
-            console.log("checkENS");
-
-            const addr = await queryWalletAddress();
-
-            const provider = getMainnetProvider();
-
-            const name = await provider.lookupAddress(addr);
-
-            // console.log(name);
-
-            return name;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return "";
-        }
-    }
-
-    async function checkChainId() {
-        try {
-            console.log("checkChainId");
-
-            const provider = await getProvider();
-
-            const { chainId } = await provider.getNetwork();
-
-            return chainId;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return 0;
-        }
-    }
-
-    async function checkGasBalance() {
-        try {
-            console.log("checkGas");
-
-            const addr = await queryWalletAddress();
-
-            const provider = await getIdchainProvider();
-
-            const balanceRaw = await provider.getBalance(addr);
-
-            return ethers.utils.formatEther(balanceRaw);
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return 0;
-        }
-    }
-
-    async function checkBrightIDIdchainLink(contextId) {
-        try {
-            console.log("checkBrightIDIdchainLink");
-
-            const userVerificationUrl = `${props.verificationUrl}/idchain/${contextId}?signed=null&timestamp=null`;
-
-            // console.log(userVerificationUrl);
-
-            const request = new Request(userVerificationUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-            });
-
-            const response = await fetch(request);
-
-            // console.log(response);
-
-            return response.ok;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return false;
-        }
-    }
-
-    async function checkBrightIDLink(contextId) {
-        try {
-            console.log("checkBrightIDLink");
-
-            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=null&timestamp=null`;
-
-            // console.log(userVerificationUrl);
-
-            const request = new Request(userVerificationUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-            });
-
-            const response = await fetch(request);
-
-            // console.log(response);
-
-            return response.ok;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return false;
-        }
-    }
-
-    async function checkBrightIDSponsorship(contextId) {
-        try {
-            console.log("checkBrightIDSponsorship");
-
-            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
-
-            // console.log(userVerificationUrl);
-
-            const request = new Request(userVerificationUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-            });
-
-            const response = await fetch(request);
-
-            // console.log(response);
-
-            return response.ok;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return false;
-        }
-    }
-
-    async function checkBrightIDVerification(contextId) {
-        try {
-            console.log("checkBrightIDVerification");
-
-            const addr = await queryWalletAddress();
-
-            const contract = await getIdchainProviderContract();
-
-            const isVerified = await contract.isVerifiedUser(addr);
-
-            // console.log(isVerified);
-
-            return isVerified;
-        } catch (e) {
-            // console.error(e);
-            // console.log(e);
-
-            return false;
-        }
-    }
-
-    async function getBrightIDSignature(contextId) {
-        try {
-            const userVerificationUrl = `${props.verificationUrl}/${props.context}/${contextId}?signed=eth&timestamp=seconds`;
-
-            // console.log(userVerificationUrl);
-
-            const request = new Request(userVerificationUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-            });
-
-            const response = await fetch(request);
-
-            const body = await response.json();
-
-            if (response.ok === false) {
-                throw new Error(body.errorMessage);
-            }
-
-            return body;
-        } catch (e) {
-            throw new Error(e.message);
-        }
-    }
-
     /* Step State Checks */
     /* ---------------------------------------------------------------------- */
-
-    function hasInstalledWallet() {
-        return true;
-    }
 
     function hasConnectedWallet() {
         return walletAddress !== "";
@@ -1086,7 +488,7 @@ function IdchainRegistration(props) {
     }
 
     function hasObtainedGasTokens() {
-        return gasBalance !== 0 && gasBalance !== 0.0 && gasBalance !== "0.0";
+        return gasBalance > 0;
     }
 
     /* Step Completion Flags */
@@ -1094,10 +496,6 @@ function IdchainRegistration(props) {
 
     function getStepCompleteString(status) {
         return status === true ? "complete" : "incomplete";
-    }
-
-    function stepInstallWalletComplete() {
-        return hasInstalledWallet();
     }
 
     function stepConnecWalletComplete() {
@@ -1135,12 +533,8 @@ function IdchainRegistration(props) {
         return status === true ? "active" : "inactive";
     }
 
-    function stepInstallWalletActive() {
-        return true;
-    }
-
     function stepConnecWalletActive() {
-        return stepInstallWalletComplete() && stepInstallWalletActive();
+        return true;
     }
 
     function stepBrightIDLinkedIdchainActive() {
@@ -1176,7 +570,7 @@ function IdchainRegistration(props) {
         );
     }
 
-    /* Connect on Bootup */
+    /* Bootstrap */
     /* ---------------------------------------------------------------------- */
 
     useEffect(() => {
@@ -1188,6 +582,10 @@ function IdchainRegistration(props) {
             firstUpdate.current = false;
         }
 
+        // Initialize registration class.
+        registration = new IdchainRegistrationModel(props);
+
+        // Reconnect on Load
         reconnectWallet();
     });
 
@@ -1263,37 +661,6 @@ function IdchainRegistration(props) {
                         </p>
                     </div>
                 </section>
-                {/* <section
-                    className={`
-                        idchain-registration-step
-                        idchain-registration-step--install
-                        idchain-registration-step--${getStepCompleteString(
-                            stepInstallWalletComplete()
-                        )}
-                        idchain-registration-step--${getStepActiveString(
-                            stepInstallWalletActive()
-                        )}
-                    `}
-                >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
-                        </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
-                                Install a Wallet
-                            </h2>
-                        </div>
-                        <div className="idchain-registration-step__action">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => installWallet()}
-                            >
-                                Install
-                            </button>
-                        </div>
-                    </div>
-                </section> */}
                 <section
                     className={`
                         idchain-registration-step
@@ -1325,11 +692,11 @@ function IdchainRegistration(props) {
                         </div>
                     </div>
                     <div className="idchain-registration-step__description">
-                        {ens && (
+                        {ensName && (
                             <p className="idchain-registration-step__description-p">
                                 <strong>ENS: </strong>
                                 <span className="idchain-registration-step__description-ens-address">
-                                    {ens}
+                                    {ensName}
                                 </span>
                             </p>
                         )}
@@ -1413,7 +780,7 @@ function IdchainRegistration(props) {
                             <QRCode
                                 renderAs="svg"
                                 size={200}
-                                value={qrCodeUrlIdchain}
+                                value={qrCodeIdchainUrl}
                             />
                         </p>
                     </div>
@@ -1503,7 +870,7 @@ function IdchainRegistration(props) {
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
-                            {canAutoSwitchNetworks() && (
+                            {canAutoSwitchNetworks && (
                                 <button
                                     className="idchain-registration-step__button"
                                     onClick={() => switchToIDChainNetwork()}
@@ -1513,7 +880,7 @@ function IdchainRegistration(props) {
                             )}
                         </div>
                     </div>
-                    {!canAutoSwitchNetworks() && (
+                    {!canAutoSwitchNetworks && (
                         <div
                             className="
                                 idchain-registration-step__description
