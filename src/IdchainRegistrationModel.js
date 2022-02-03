@@ -3,8 +3,6 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 class IdchainRegistrationModel {
-    props;
-
     contractAbi = [
         {
             type: "constructor",
@@ -205,8 +203,53 @@ class IdchainRegistrationModel {
 
     isVerifiedViaContract = false;
 
+    context = "";
+
+    contractAddr = "";
+
+    deepLinkPrefix = "";
+
+    faucetClaimURL = "";
+
+    mainnetRpcUrl = "";
+
+    walletConnectInfuraId = "";
+
+    registrationBlockExplorerUrl = "";
+
+    registrationBlockExplorerTxnPath = "";
+
+    registrationChainId = "";
+
+    registrationChainName = "";
+
+    registrationIconUrl = "";
+
+    registrationRpcUrl = "";
+
+    registrationTokenDecimal = "";
+
+    registrationTokenName = "";
+
+    verificationUrl = "";
+
     constructor(props) {
-        this.props = props;
+        this.context = props.context;
+        this.contractAddr = props.contractAddr;
+        this.deepLinkPrefix = props.deepLinkPrefix;
+        this.faucetClaimURL = props.faucetClaimURL;
+        this.mainnetRpcUrl = props.mainnetRpcUrl;
+        this.walletConnectInfuraId = props.walletConnectInfuraId;
+        this.registrationBlockExplorerUrl = props.registrationBlockExplorerUrl;
+        this.registrationBlockExplorerTxnPath =
+            props.registrationBlockExplorerTxnPath;
+        this.registrationChainId = props.registrationChainId;
+        this.registrationChainName = props.registrationChainName;
+        this.registrationIconUrl = props.registrationIconUrl;
+        this.registrationRpcUrl = props.registrationRpcUrl;
+        this.registrationTokenDecimal = props.registrationTokenDecimal;
+        this.registrationTokenName = props.registrationTokenName;
+        this.verificationUrl = props.verificationUrl;
     }
 
     resetWalletData() {
@@ -234,16 +277,15 @@ class IdchainRegistrationModel {
             walletconnect: {
                 package: WalletConnectProvider,
                 options: {
-                    infuraId: this.props.walletConnectInfuraId, // required
+                    infuraId: this.walletConnectInfuraId, // required
                     rpc: {},
-                    // network: this.props.registrationChainName,
+                    // network: this.registrationChainName,
                 },
             },
         };
 
-        providerOptions.walletconnect.options.rpc[
-            this.props.registrationChainId
-        ] = this.props.registrationRpcUrl;
+        providerOptions.walletconnect.options.rpc[this.registrationChainId] =
+            this.registrationRpcUrl;
 
         this.web3Modal = new Web3Modal({
             network: "mainnet", // optional
@@ -290,13 +332,11 @@ class IdchainRegistrationModel {
     }
 
     getMainnetProvider() {
-        return new ethers.providers.JsonRpcProvider(this.props.mainnetRpcUrl);
+        return new ethers.providers.JsonRpcProvider(this.mainnetRpcUrl);
     }
 
     getIdchainProvider() {
-        return new ethers.providers.JsonRpcProvider(
-            this.props.registrationRpcUrl
-        );
+        return new ethers.providers.JsonRpcProvider(this.registrationRpcUrl);
     }
 
     /* Contracts */
@@ -306,7 +346,7 @@ class IdchainRegistrationModel {
         const provider = await this.getIdchainProvider();
 
         return new ethers.Contract(
-            this.props.contractAddr,
+            this.contractAddr,
             this.contractAbi,
             provider
         );
@@ -316,7 +356,7 @@ class IdchainRegistrationModel {
         const provider = await this.getProvider();
 
         return new ethers.Contract(
-            this.props.contractAddr,
+            this.contractAddr,
             this.contractAbi,
             provider
         );
@@ -326,7 +366,7 @@ class IdchainRegistrationModel {
         const provider = await this.getProvider();
 
         return new ethers.Contract(
-            this.props.contractAddr,
+            this.contractAddr,
             this.contractAbi,
             provider.getSigner()
         );
@@ -369,13 +409,13 @@ class IdchainRegistrationModel {
     async getQrCodeUrl() {
         const addr = await this.getWalletAddress();
 
-        return `${this.props.deepLinkPrefix}/${this.props.context}/${addr}`;
+        return `${this.deepLinkPrefix}/${this.context}/${addr}`;
     }
 
     async getQrCodeIdchainUrl() {
         const addr = await this.getWalletAddress();
 
-        return `${this.props.deepLinkPrefix}/idchain/${addr}`;
+        return `${this.deepLinkPrefix}/idchain/${addr}`;
     }
 
     async queryWalletAddress() {
@@ -462,7 +502,7 @@ class IdchainRegistrationModel {
         try {
             console.log("queryBrightIDIdchainLink");
 
-            const userVerificationUrl = `${this.props.verificationUrl}/idchain/${contextId}?signed=null&timestamp=null`;
+            const userVerificationUrl = `${this.verificationUrl}/idchain/${contextId}?signed=null&timestamp=null`;
 
             // console.log(userVerificationUrl);
 
@@ -490,7 +530,7 @@ class IdchainRegistrationModel {
         try {
             console.log("queryBrightIDLink");
 
-            const userVerificationUrl = `${this.props.verificationUrl}/${this.props.context}/${contextId}?signed=null&timestamp=null`;
+            const userVerificationUrl = `${this.verificationUrl}/${this.context}/${contextId}?signed=null&timestamp=null`;
 
             // console.log(userVerificationUrl);
 
@@ -518,7 +558,7 @@ class IdchainRegistrationModel {
         try {
             console.log("queryBrightIDSponsorship");
 
-            const userVerificationUrl = `${this.props.verificationUrl}/${this.props.context}/${contextId}?signed=eth&timestamp=seconds`;
+            const userVerificationUrl = `${this.verificationUrl}/${this.context}/${contextId}?signed=eth&timestamp=seconds`;
 
             // console.log(userVerificationUrl);
 
@@ -565,7 +605,7 @@ class IdchainRegistrationModel {
 
     async queryBrightIDSignature(contextId) {
         try {
-            const userVerificationUrl = `${this.props.verificationUrl}/${this.props.context}/${contextId}?signed=eth&timestamp=seconds`;
+            const userVerificationUrl = `${this.verificationUrl}/${this.context}/${contextId}?signed=eth&timestamp=seconds`;
 
             // console.log(userVerificationUrl);
 
@@ -709,7 +749,7 @@ class IdchainRegistrationModel {
     async faucetClaim() {
         const addr = await this.getWalletAddress();
 
-        const request = new Request(this.props.faucetClaimURL, {
+        const request = new Request(this.faucetClaimURL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
@@ -722,7 +762,7 @@ class IdchainRegistrationModel {
 
     async switchToIDChainNetwork() {
         const registrationHexChainId = ethers.utils.hexlify(
-            Number(this.props.registrationChainId)
+            Number(this.registrationChainId)
         );
 
         const provider = await this.getProvider();
@@ -735,7 +775,7 @@ class IdchainRegistrationModel {
 
     async addIDChainNetwork() {
         const registrationHexChainId = ethers.utils.hexlify(
-            Number(this.props.registrationChainId)
+            Number(this.registrationChainId)
         );
 
         const provider = await this.getProvider();
@@ -745,17 +785,15 @@ class IdchainRegistrationModel {
             params: [
                 {
                     chainId: registrationHexChainId,
-                    chainName: this.props.registrationChainName,
+                    chainName: this.registrationChainName,
                     nativeCurrency: {
-                        name: this.props.registrationTokenName,
-                        symbol: this.props.registrationTokenName,
-                        decimals: Number(this.props.registrationTokenDecimal),
+                        name: this.registrationTokenName,
+                        symbol: this.registrationTokenName,
+                        decimals: Number(this.registrationTokenDecimal),
                     },
-                    rpcUrls: [this.props.registrationRpcUrl],
-                    blockExplorerUrls: [
-                        this.props.registrationBlockExplorerUrl,
-                    ],
-                    iconUrls: [this.props.registrationIconUrl],
+                    rpcUrls: [this.registrationRpcUrl],
+                    blockExplorerUrls: [this.registrationBlockExplorerUrl],
+                    iconUrls: [this.registrationIconUrl],
                 },
             ],
         });
