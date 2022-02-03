@@ -762,6 +762,14 @@ class IdchainRegistrationModel {
     }
 
     async sponsorViaContract() {
+        const chainId = await this.initChainId();
+
+        if (chainId !== Number(this.registrationChainId)) {
+            throw new Error(
+                `Please switch to the ${this.registrationChainName} network first.`
+            );
+        }
+
         const addr = await this.getWalletAddress();
 
         const contract = await this.getContractRw();
@@ -770,6 +778,14 @@ class IdchainRegistrationModel {
     }
 
     async verifyViaContract() {
+        const chainId = await this.initChainId();
+
+        if (chainId !== Number(this.registrationChainId)) {
+            throw new Error(
+                `Please switch to the ${this.registrationChainName} network first.`
+            );
+        }
+
         const addr = await this.getWalletAddress();
 
         const verificationData = await this.queryBrightIDSignature(addr);
