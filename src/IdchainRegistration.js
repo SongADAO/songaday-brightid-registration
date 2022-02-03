@@ -65,6 +65,9 @@ function IdchainRegistration(props) {
     const [stepObtainGasTokensError, setStepObtainGasTokensError] =
         useState("");
 
+    const [stepObtainGasTokensStatus, setStepObtainGasTokensStatus] =
+        useState("");
+
     const [stepSponsoredViaContractError, setStepSponsoredViaContractError] =
         useState("");
 
@@ -107,7 +110,7 @@ function IdchainRegistration(props) {
     }
 
     function onChangePolling() {
-        if (registration.gasBalance === 0) {
+        if (registration.gasBalance === 0 || registration.gasBalance === 0.0) {
             initGasBalance();
         }
 
@@ -201,6 +204,11 @@ function IdchainRegistration(props) {
             const gasBalance = await registration.initGasBalance();
 
             setGasBalance(gasBalance);
+
+            if (gasBalance > 0) {
+                setStepObtainGasTokensStatus("");
+                setStepObtainGasTokensError("");
+            }
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -401,6 +409,10 @@ function IdchainRegistration(props) {
 
     async function faucetClaim() {
         try {
+            setStepObtainGasTokensStatus(
+                "We're obtaining your gas tokens. This can take up to a minute. Please wait."
+            );
+
             const response = await registration.faucetClaim();
 
             if (response.ok === false) {
@@ -413,6 +425,7 @@ function IdchainRegistration(props) {
             // console.log(e);
 
             setStepObtainGasTokensError(e.message);
+            setStepObtainGasTokensStatus("");
         }
     }
 
@@ -1053,6 +1066,21 @@ function IdchainRegistration(props) {
                         {stepObtainGasTokensError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
                                 {stepObtainGasTokensError}
+                            </div>
+                        )}
+                        {stepObtainGasTokensStatus && (
+                            <div className="idchain-registration-step__response">
+                                <div className="idchain-registration-step__response-loading-icon">
+                                    <div className="idchain-registration-step__loading-icon">
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div className="idchain-registration-step__response-message">
+                                    <div>{stepObtainGasTokensStatus}</div>
+                                </div>
                             </div>
                         )}
                     </div>
