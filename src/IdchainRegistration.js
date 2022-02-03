@@ -157,7 +157,7 @@ function IdchainRegistration(props) {
             registration.web3Instance.on("chainChanged", onChainChanged);
         }
 
-        // changePollingInterval = setInterval(onChangePolling, 5000);
+        changePollingInterval = setInterval(onChangePolling, 5000);
     }
 
     /* State Data Query */
