@@ -1247,12 +1247,16 @@ function IdchainRegistration(props) {
                                     Ethereum mainnet.
                                 </p>
                                 {canAutoSwitchNetworks && (
-                                    <button
-                                        className="idchain-registration-step__button"
-                                        onClick={() => switchToMainnetNetwork()}
-                                    >
-                                        Switch back to Mainnet
-                                    </button>
+                                    <p className="idchain-registration-step__description-p">
+                                        <button
+                                            className="idchain-registration-step__button"
+                                            onClick={() =>
+                                                switchToMainnetNetwork()
+                                            }
+                                        >
+                                            Switch back to Mainnet
+                                        </button>
+                                    </p>
                                 )}
                             </div>
                         )}
