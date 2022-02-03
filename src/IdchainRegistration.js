@@ -1118,12 +1118,15 @@ function IdchainRegistration(props) {
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => sponsorViaContract()}
-                            >
-                                Go
-                            </button>
+                            {stepSwitchToIDChainNetworkComplete() && (
+                                <button
+                                    className="idchain-registration-step__button"
+                                    onClick={() => sponsorViaContract()}
+                                    disabled={!hasSwitchedToIDChainNetwork()}
+                                >
+                                    Go
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div
@@ -1193,12 +1196,14 @@ function IdchainRegistration(props) {
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => verifyViaContract()}
-                            >
-                                Verify
-                            </button>
+                            {stepSwitchToIDChainNetworkComplete() && (
+                                <button
+                                    className="idchain-registration-step__button"
+                                    onClick={() => verifyViaContract()}
+                                >
+                                    Verify
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="idchain-registration-step__feedback">
