@@ -324,6 +324,10 @@ function IdchainRegistration(props) {
 
         var url = qrCodeIdchainUrl;
 
+        if (url === "") {
+            return;
+        }
+
         var linker = new DeepLinker({
             onIgnored: function () {
                 console.log("browser failed to respond to the deep link");
@@ -347,6 +351,10 @@ function IdchainRegistration(props) {
         // window.open(qrCodeUrl);
 
         var url = qrCodeUrl;
+
+        if (url === "") {
+            return;
+        }
 
         var linker = new DeepLinker({
             onIgnored: function () {
@@ -824,59 +832,61 @@ function IdchainRegistration(props) {
                             </button> */}
                         </div>
                     </div>
-                    <div
-                        className="
+                    {qrCodeIdchainUrl && (
+                        <div
+                            className="
                             idchain-registration-step__description
                             idchain-registration-step__description--action
                             idchain-registration-step__description--action-hide-on-complete
                         "
-                    >
-                        <div className="idchain-registration-step--mobile">
-                            <p className="idchain-registration-step__description-p ">
-                                If you're on the device with BrightID installed
-                                use this button to open BrightID and link your
-                                wallet.
-                            </p>
-                            <p className="idchain-registration-step__description-button-container">
-                                <button
-                                    className="idchain-registration-step__button"
-                                    onClick={() =>
-                                        linkAddressToBrightIDIdchain()
-                                    }
-                                >
-                                    Link Address
-                                </button>
-                            </p>
-                            <div className="idchain-registration-step__feedback">
-                                {linkAddressToBrightIDIdchainError && (
-                                    <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                        {linkAddressToBrightIDIdchainError}
-                                    </div>
-                                )}
+                        >
+                            <div className="idchain-registration-step--mobile">
+                                <p className="idchain-registration-step__description-p ">
+                                    If you're on the device with BrightID
+                                    installed use this button to open BrightID
+                                    and link your wallet.
+                                </p>
+                                <p className="idchain-registration-step__description-button-container">
+                                    <button
+                                        className="idchain-registration-step__button"
+                                        onClick={() =>
+                                            linkAddressToBrightIDIdchain()
+                                        }
+                                    >
+                                        Link Address
+                                    </button>
+                                </p>
+                                <div className="idchain-registration-step__feedback">
+                                    {linkAddressToBrightIDIdchainError && (
+                                        <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                            {linkAddressToBrightIDIdchainError}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="idchain-registration-step--mobile">
+                                    <br />
+                                </p>
+                                <p className="idchain-registration-step__description-p">
+                                    If BrightID is installed on another device
+                                    scan the QR code below with the "Scan a
+                                    Code" button in the BrightID mobile app.
+                                </p>
                             </div>
-                            <p className="idchain-registration-step--mobile">
-                                <br />
-                            </p>
-                            <p className="idchain-registration-step__description-p">
-                                If BrightID is installed on another device scan
-                                the QR code below with the "Scan a Code" button
-                                in the BrightID mobile app.
+                            <div className="idchain-registration-step--desktop">
+                                <p className="idchain-registration-step__description-p">
+                                    Use the "Scan a Code" button in the BrightID
+                                    app to scan the QR code below.
+                                </p>
+                            </div>
+                            <p className="idchain-registration-step__description-qrcode-container">
+                                <QRCode
+                                    renderAs="svg"
+                                    size={200}
+                                    value={qrCodeIdchainUrl}
+                                />
                             </p>
                         </div>
-                        <div className="idchain-registration-step--desktop">
-                            <p className="idchain-registration-step__description-p">
-                                Use the "Scan a Code" button in the BrightID app
-                                to scan the QR code below.
-                            </p>
-                        </div>
-                        <p className="idchain-registration-step__description-qrcode-container">
-                            <QRCode
-                                renderAs="svg"
-                                size={200}
-                                value={qrCodeIdchainUrl}
-                            />
-                        </p>
-                    </div>
+                    )}
                     <div className="idchain-registration-step__feedback"></div>
                 </section>
                 <section
@@ -909,56 +919,59 @@ function IdchainRegistration(props) {
                             </button> */}
                         </div>
                     </div>
-                    <div
-                        className="
+                    {qrCodeUrl && (
+                        <div
+                            className="
                             idchain-registration-step__description
                             idchain-registration-step__description--action
                             idchain-registration-step__description--action-hide-on-complete
                         "
-                    >
-                        <div className="idchain-registration-step--mobile">
-                            <p className="idchain-registration-step__description-p">
-                                If you're on your mobile device just use this
-                                button to open BrightID and link your wallet.
-                            </p>
-                            <p className="idchain-registration-step__description-button-container">
-                                <button
-                                    className="idchain-registration-step__button"
-                                    onClick={() => linkAddressToBrightID()}
-                                >
-                                    Link Address
-                                </button>
-                            </p>
-                            <div className="idchain-registration-step__feedback">
-                                {linkAddressToBrightIDError && (
-                                    <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                        {linkAddressToBrightIDError}
-                                    </div>
-                                )}
+                        >
+                            <div className="idchain-registration-step--mobile">
+                                <p className="idchain-registration-step__description-p">
+                                    If you're on your mobile device just use
+                                    this button to open BrightID and link your
+                                    wallet.
+                                </p>
+                                <p className="idchain-registration-step__description-button-container">
+                                    <button
+                                        className="idchain-registration-step__button"
+                                        onClick={() => linkAddressToBrightID()}
+                                    >
+                                        Link Address
+                                    </button>
+                                </p>
+                                <div className="idchain-registration-step__feedback">
+                                    {linkAddressToBrightIDError && (
+                                        <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                            {linkAddressToBrightIDError}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="idchain-registration-step--mobile">
+                                    <br />
+                                </p>
+                                <p className="idchain-registration-step__description-p">
+                                    If BrightID is installed on another device
+                                    scan the QR code below with the "Scan a
+                                    Code" button in the BrightID mobile app.
+                                </p>
                             </div>
-                            <p className="idchain-registration-step--mobile">
-                                <br />
-                            </p>
-                            <p className="idchain-registration-step__description-p">
-                                If BrightID is installed on another device scan
-                                the QR code below with the "Scan a Code" button
-                                in the BrightID mobile app.
+                            <div className="idchain-registration-step--desktop">
+                                <p className="idchain-registration-step__description-p">
+                                    Use the "Scan a Code" button in the BrightID
+                                    app to scan the QR code below.
+                                </p>
+                            </div>
+                            <p className="idchain-registration-step__description-qrcode-container">
+                                <QRCode
+                                    renderAs="svg"
+                                    size={200}
+                                    value={qrCodeUrl}
+                                />
                             </p>
                         </div>
-                        <div className="idchain-registration-step--desktop">
-                            <p className="idchain-registration-step__description-p">
-                                Use the "Scan a Code" button in the BrightID app
-                                to scan the QR code below.
-                            </p>
-                        </div>
-                        <p className="idchain-registration-step__description-qrcode-container">
-                            <QRCode
-                                renderAs="svg"
-                                size={200}
-                                value={qrCodeUrl}
-                            />
-                        </p>
-                    </div>
+                    )}
                     <div className="idchain-registration-step__feedback"></div>
                 </section>
                 <section
