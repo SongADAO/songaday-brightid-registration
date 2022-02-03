@@ -451,6 +451,15 @@ function IdchainRegistration(props) {
         }
     }
 
+    async function switchToMainnetNetwork() {
+        try {
+            await registration.switchToMainnetNetwork();
+        } catch (switchError) {
+            // console.error(switchError);
+            // console.log(switchError);
+        }
+    }
+
     async function addIDChainNetwork() {
         try {
             await registration.addIDChainNetwork();
@@ -1223,6 +1232,28 @@ function IdchainRegistration(props) {
                         {stepVerifyViaContractError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
                                 {stepVerifyViaContractError}
+                            </div>
+                        )}
+                        {stepVerifyViaContractComplete() && (
+                            <div className="idchain-registration-step__description">
+                                <p className="idchain-registration-step__description-p">
+                                    <strong>
+                                        That's a wrap. You're ready to go.
+                                    </strong>
+                                </p>
+                                <p className="idchain-registration-step__description-p">
+                                    Before you leave you can use the button
+                                    below to switch your wallet back to the
+                                    Ethereum mainnet.
+                                </p>
+                                {canAutoSwitchNetworks && (
+                                    <button
+                                        className="idchain-registration-step__button"
+                                        onClick={() => switchToMainnetNetwork()}
+                                    >
+                                        Switch back to Mainnet
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>

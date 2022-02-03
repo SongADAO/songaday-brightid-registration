@@ -760,6 +760,15 @@ class IdchainRegistrationModel {
         return await fetch(request);
     }
 
+    async switchToMainnetNetwork() {
+        const provider = await this.getProvider();
+
+        return await provider.provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x1" }],
+        });
+    }
+
     async switchToIDChainNetwork() {
         const registrationHexChainId = ethers.utils.hexlify(
             Number(this.registrationChainId)
