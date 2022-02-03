@@ -466,12 +466,6 @@ function IdchainRegistration(props) {
 
     async function sponsorViaContract() {
         try {
-            const chainId = await registration.initChainId();
-
-            if (chainId !== Number(props.registrationChainId)) {
-                throw new Error(`Please switch to the IDChain network first.`);
-            }
-
             const tx = await registration.sponsorViaContract();
 
             setIsSponsoredViaContractTxnProcessing(true);
@@ -500,12 +494,6 @@ function IdchainRegistration(props) {
 
     async function verifyViaContract() {
         try {
-            const chainId = await registration.initChainId();
-
-            if (chainId !== Number(props.registrationChainId)) {
-                throw new Error(`Please switch to the IDChain network first.`);
-            }
-
             const tx = await registration.verifyViaContract();
 
             setIsVerifiedViaContractTxnProcessing(true);
