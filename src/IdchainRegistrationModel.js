@@ -195,7 +195,7 @@ class IdchainRegistrationModel {
 
     chainId = 0;
 
-    gasBalance = 0;
+    gasBalance = 0.0;
 
     isBrightIDIdchainLinked = false;
 
@@ -213,7 +213,7 @@ class IdchainRegistrationModel {
         this.walletAddress = "";
         this.ensName = "";
         this.chainId = 0;
-        this.gasBalance = 0;
+        this.gasBalance = 0.0;
         this.isBrightIDIdchainLinked = false;
         this.isBrightIDLinked = false;
         this.isSponsoredViaContract = false;
@@ -447,12 +447,14 @@ class IdchainRegistrationModel {
 
             const balanceRaw = await provider.getBalance(addr);
 
-            return ethers.utils.formatEther(balanceRaw);
+            const balanceFormatted = await ethers.utils.formatEther(balanceRaw);
+
+            return parseFloat(balanceFormatted);
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            return 0;
+            return 0.0;
         }
     }
 
