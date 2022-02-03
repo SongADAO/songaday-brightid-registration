@@ -139,7 +139,6 @@
 }
 
 .idchain-registration-step__description-button-container {
-    margin-bottom: calc(var(--paddingSize) * 3);
     text-align: center;
 }
 
@@ -155,6 +154,20 @@
 .idchain-registration-step__description-wallet-address {
     display: block;
     font-size: 12px;
+}
+
+.idchain-registration-step--mobile {
+    display: none;
+}
+
+@media only screen and (hover: none) and (pointer: coarse) {
+    .idchain-registration-step--mobile {
+        display: block;
+    }
+
+    .idchain-registration-step--desktop {
+        display: none;
+    }
 }
 
 /* Interaction Info and Errors */

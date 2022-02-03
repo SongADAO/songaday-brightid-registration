@@ -4,6 +4,7 @@ import "./IdchainRegistration.css";
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode.react";
 import IdchainRegistrationModel from "./IdchainRegistrationModel";
+import DeepLinker from "./DeepLinker";
 
 let registration;
 
@@ -68,6 +69,14 @@ function IdchainRegistration(props) {
         useState("");
 
     const [stepVerifyViaContractError, setStepVerifyViaContractError] =
+        useState("");
+
+    const [
+        linkAddressToBrightIDIdchainError,
+        setLinkAddressToBrightIDIdchainError,
+    ] = useState("");
+
+    const [linkAddressToBrightIDError, setLinkAddressToBrightIDError] =
         useState("");
 
     /* Util */
@@ -148,7 +157,7 @@ function IdchainRegistration(props) {
             registration.web3Instance.on("chainChanged", onChainChanged);
         }
 
-        changePollingInterval = setInterval(onChangePolling, 5000);
+        // changePollingInterval = setInterval(onChangePolling, 5000);
     }
 
     /* State Data Query */
@@ -303,11 +312,51 @@ function IdchainRegistration(props) {
     }
 
     function linkAddressToBrightIDIdchain() {
-        window.open(qrCodeIdchainUrl);
+        // window.open(qrCodeIdchainUrl);
+
+        var url = qrCodeIdchainUrl;
+
+        var linker = new DeepLinker({
+            onIgnored: function () {
+                console.log("browser failed to respond to the deep link");
+
+                setLinkAddressToBrightIDIdchainError(
+                    "Couldn't open BrightID. Scan the QR code below with the device you have BrightID installed on."
+                );
+            },
+            onFallback: function () {
+                console.log("dialog hidden or user returned to tab");
+            },
+            onReturn: function () {
+                console.log("user returned to the page from the native app");
+            },
+        });
+
+        linker.openURL(url);
     }
 
     function linkAddressToBrightID() {
-        window.open(qrCodeUrl);
+        // window.open(qrCodeUrl);
+
+        var url = qrCodeUrl;
+
+        var linker = new DeepLinker({
+            onIgnored: function () {
+                console.log("browser failed to respond to the deep link");
+
+                setLinkAddressToBrightIDError(
+                    "Couldn't open BrightID. Scan the QR code below with the device you have BrightID installed on."
+                );
+            },
+            onFallback: function () {
+                console.log("dialog hidden or user returned to tab");
+            },
+            onReturn: function () {
+                console.log("user returned to the page from the native app");
+            },
+        });
+
+        linker.openURL(url);
     }
 
     function reconnectWallet() {
@@ -760,22 +809,44 @@ function IdchainRegistration(props) {
                             idchain-registration-step__description--action-hide-on-complete
                         "
                     >
-                        <p className="idchain-registration-step__description-p">
-                            If you're on your mobile device just use this button
-                            to open BrightID and link your wallet.
-                        </p>
-                        <p className="idchain-registration-step__description-button-container">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => linkAddressToBrightIDIdchain()}
-                            >
-                                Link Address
-                            </button>
-                        </p>
-                        <p className="idchain-registration-step__description-p">
-                            If you're on desktop, scan the QR code below with
-                            the "Scan a Code" button in the BrightID mobile app.
-                        </p>
+                        <div className="idchain-registration-step--mobile">
+                            <p className="idchain-registration-step__description-p ">
+                                If you're on the device with BrightID installed
+                                use this button to open BrightID and link your
+                                wallet.
+                            </p>
+                            <p className="idchain-registration-step__description-button-container">
+                                <button
+                                    className="idchain-registration-step__button"
+                                    onClick={() =>
+                                        linkAddressToBrightIDIdchain()
+                                    }
+                                >
+                                    Link Address
+                                </button>
+                            </p>
+                            <div className="idchain-registration-step__feedback">
+                                {linkAddressToBrightIDIdchainError && (
+                                    <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                        {linkAddressToBrightIDIdchainError}
+                                    </div>
+                                )}
+                            </div>
+                            <p className="idchain-registration-step--mobile">
+                                <br />
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                If BrightID is installed on another device scan
+                                the QR code below with the "Scan a Code" button
+                                in the BrightID mobile app.
+                            </p>
+                        </div>
+                        <div className="idchain-registration-step--desktop">
+                            <p className="idchain-registration-step__description-p">
+                                Use the "Scan a Code" button in the BrightID app
+                                to scan the QR code below.
+                            </p>
+                        </div>
                         <p className="idchain-registration-step__description-qrcode-container">
                             <QRCode
                                 renderAs="svg"
@@ -823,22 +894,41 @@ function IdchainRegistration(props) {
                             idchain-registration-step__description--action-hide-on-complete
                         "
                     >
-                        <p className="idchain-registration-step__description-p">
-                            If you're on your mobile device just use this button
-                            to open BrightID and link your wallet.
-                        </p>
-                        <p className="idchain-registration-step__description-button-container">
-                            <button
-                                className="idchain-registration-step__button"
-                                onClick={() => linkAddressToBrightID()}
-                            >
-                                Link Address
-                            </button>
-                        </p>
-                        <p className="idchain-registration-step__description-p">
-                            If you're on desktop, scan the QR code below with
-                            the "Scan a Code" button in the BrightID mobile app.
-                        </p>
+                        <div className="idchain-registration-step--mobile">
+                            <p className="idchain-registration-step__description-p">
+                                If you're on your mobile device just use this
+                                button to open BrightID and link your wallet.
+                            </p>
+                            <p className="idchain-registration-step__description-button-container">
+                                <button
+                                    className="idchain-registration-step__button"
+                                    onClick={() => linkAddressToBrightID()}
+                                >
+                                    Link Address
+                                </button>
+                            </p>
+                            <div className="idchain-registration-step__feedback">
+                                {linkAddressToBrightIDError && (
+                                    <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                        {linkAddressToBrightIDError}
+                                    </div>
+                                )}
+                            </div>
+                            <p className="idchain-registration-step--mobile">
+                                <br />
+                            </p>
+                            <p className="idchain-registration-step__description-p">
+                                If BrightID is installed on another device scan
+                                the QR code below with the "Scan a Code" button
+                                in the BrightID mobile app.
+                            </p>
+                        </div>
+                        <div className="idchain-registration-step--desktop">
+                            <p className="idchain-registration-step__description-p">
+                                Use the "Scan a Code" button in the BrightID app
+                                to scan the QR code below.
+                            </p>
+                        </div>
                         <p className="idchain-registration-step__description-qrcode-container">
                             <QRCode
                                 renderAs="svg"
