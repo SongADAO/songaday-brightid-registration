@@ -266,12 +266,8 @@ class IdchainRegistrationModel {
     /* Web3 Modal & Instances */
     /* ---------------------------------------------------------------------- */
 
-    async getWeb3Modal() {
-        if (typeof this.web3Modal === "object") {
-            return this.web3Modal;
-        }
-
-        console.log("init Web3Modal");
+    async initWeb3Modal() {
+        console.log("initWeb3Modal");
 
         const providerOptions = {
             walletconnect: {
@@ -287,37 +283,63 @@ class IdchainRegistrationModel {
         providerOptions.walletconnect.options.rpc[this.registrationChainId] =
             this.registrationRpcUrl;
 
-        this.web3Modal = new Web3Modal({
+        const web3Modal = new Web3Modal({
             network: "mainnet", // optional
             cacheProvider: true, // optional
             providerOptions, // required
         });
 
+        return web3Modal;
+    }
+
+    async initInstance() {
+        console.log("initInstance");
+
+        const web3Modal = await this.getWeb3Modal();
+
+        const web3Instance = await web3Modal.connect();
+
+        return web3Instance;
+    }
+
+    async getWeb3Modal() {
+        console.log("getWeb3Modal");
+
+        if (typeof this.web3Modal === "object") {
+            return this.web3Modal;
+        }
+
+        const web3Modal = await this.initWeb3Modal();
+
+        this.web3Modal = web3Modal;
+
         return this.web3Modal;
     }
 
     async getInstance() {
+        console.log("getInstance");
+
         if (typeof this.web3Instance === "object") {
             return this.web3Instance;
         }
 
-        const web3Modal = await this.getWeb3Modal();
+        const web3Instance = await this.initInstance();
 
-        const newInstance = await web3Modal.connect();
-
-        this.web3Instance = newInstance;
+        this.web3Instance = web3Instance;
 
         return this.web3Instance;
     }
 
     async getFreshInstance() {
+        console.log("getFreshInstance");
+
         const web3Modal = await this.getWeb3Modal();
 
-        await web3Modal.clearCachedProvider();
+        web3Modal.clearCachedProvider();
 
-        const newInstance = await web3Modal.connect();
+        const web3Instance = await this.initInstance();
 
-        this.web3Instance = newInstance;
+        this.web3Instance = web3Instance;
 
         return this.web3Instance;
     }
