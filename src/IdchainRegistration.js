@@ -1,5 +1,7 @@
 import googlePlay from "./google-play.png";
 import appStore from "./app-store.png";
+import openAchievementsSS from "./open-achievements-ss.png";
+import isVerifiedSS from "./is-verified-ss.png";
 import "./IdchainRegistration.css";
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode.react";
@@ -725,18 +727,80 @@ function IdchainRegistration(props) {
                             </h2>
                         </div>
                         <div className="idchain-registration-step__action">
-                            <button
+                            {/* <button
                                 className="idchain-registration-step__button"
                                 onClick={() => verifyWithBrightID()}
                             >
-                                Find Party
-                            </button>
+                                Get Verified
+                            </button> */}
                         </div>
                     </div>
                     <div className="idchain-registration-step__description">
                         <p className="idchain-registration-step__description-p">
-                            Once you have BrightID installed you need to join a
-                            verification party to become verified.
+                            Once you have BrightID installed you need to become
+                            verified in their system by participating in a
+                            "Verification Party".
+                        </p>
+                        <p className="idchain-registration-step__description-button-container">
+                            <button
+                                className="idchain-registration-step__button"
+                                onClick={() => verifyWithBrightID()}
+                            >
+                                Find Verification Party
+                            </button>
+                        </p>
+                        <h3 className="idchain-registration-step__description-p">
+                            Support
+                        </h3>
+                        <p className="idchain-registration-step__description-p">
+                            More details on becoming verified within the
+                            BrightID system can be found at{" "}
+                            <a
+                                className="idchain-registration-step__description-link"
+                                href="https://brightid.gitbook.io/brightid/getting-verified"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                How To Verify
+                            </a>
+                            .
+                        </p>
+                        <p className="idchain-registration-step__description-p">
+                            They also have a{" "}
+                            <a
+                                className="idchain-registration-step__description-link"
+                                href="https://discord.gg/xzhFEeK"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                Discord channel
+                            </a>{" "}
+                            for support.
+                        </p>
+                        <h3 className="idchain-registration-step__description-p">
+                            After Verification
+                        </h3>
+                        <p className="idchain-registration-step__description-p">
+                            After you have verified via a connection party, it
+                            will take up to 10 minutes for you to become
+                            verified in their system. You will know when you're
+                            ready to continue through the rest of steps in this
+                            process when you see "BrightID meet" checked off in
+                            your list of achievements. See the screenshots below
+                            for where to look in the app.
+                        </p>
+
+                        <p className="idchain-registration-step__description-p idchain-registration-step__description-p--2col-img">
+                            <img
+                                className="idchain-registration-step__app-store-image"
+                                src={openAchievementsSS}
+                                alt="Open Achievements"
+                            />
+                            <img
+                                className="idchain-registration-step__app-store-image"
+                                src={isVerifiedSS}
+                                alt="Check Is Verified"
+                            />
                         </p>
                     </div>
                 </section>
