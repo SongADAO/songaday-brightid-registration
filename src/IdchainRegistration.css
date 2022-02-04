@@ -15,11 +15,11 @@
     --stepTextColor: #111;
 
     --stepDescriptionBackgroundColor: #e5e5e5;
+    --stepDescriptionLinkColor: #008177;
+    --stepDescriptionLinkHoverColor: #009f93;
 
     --stepButtonBackgroundColor: #282c34;
     --stepButtonBackgroundColorHover: #001e36;
-    /* --stepButtonBackgroundColor: #001e36; */
-    /* --stepButtonBackgroundColorHover: #004074; */
     --stepButtonColor: #fff;
 
     --statusInactiveColor: #bbb;
@@ -129,6 +129,16 @@
     padding: var(--paddingSize);
 }
 
+.idchain-registration-step__description-link,
+.idchain-registration-step__description-link:visited {
+    color: var(--stepDescriptionLinkColor);
+}
+
+.idchain-registration-step__description-link:hover,
+.idchain-registration-step__description-link:active {
+    color: var(--stepDescriptionLinkHoverColor);
+}
+
 .idchain-registration-step__description-p {
     margin: 0;
 }
@@ -136,6 +146,17 @@
 .idchain-registration-step__description-p
     + .idchain-registration-step__description-p {
     margin-top: 1em;
+}
+
+.idchain-registration-step__description-p--2col-img {
+}
+
+.idchain-registration-step__description-p--2col-img img {
+    width: 48%;
+}
+
+.idchain-registration-step__description-p--2col-img img + img {
+    margin-left: 4%;
 }
 
 .idchain-registration-step__description-button-container {
