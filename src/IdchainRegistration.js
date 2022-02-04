@@ -885,6 +885,14 @@ function IdchainRegistration(props) {
                                     value={qrCodeIdchainUrl}
                                 />
                             </p>
+                            <div className="idchain-registration-step--desktop">
+                                <p className="idchain-registration-step__description-p">
+                                    After linking, you'll get a confirmation in
+                                    the BrightID app. Then just wait a few
+                                    seconds and this website will update to
+                                    allow continuing to the next step.
+                                </p>
+                            </div>
                         </div>
                     )}
                     <div className="idchain-registration-step__feedback"></div>
@@ -970,6 +978,14 @@ function IdchainRegistration(props) {
                                     value={qrCodeUrl}
                                 />
                             </p>
+                            <div className="idchain-registration-step--desktop">
+                                <p className="idchain-registration-step__description-p">
+                                    After linking, you'll get a confirmation in
+                                    the BrightID app. Then just wait a few
+                                    seconds and this website will update to
+                                    allow continuing to the next step.
+                                </p>
+                            </div>
                         </div>
                     )}
                     <div className="idchain-registration-step__feedback"></div>
