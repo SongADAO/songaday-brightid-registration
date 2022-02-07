@@ -195,6 +195,8 @@ class IdchainRegistrationModel {
 
     gasBalance = 0.0;
 
+    brightIDLinkedWallets = [];
+
     isBrightIDIdchainLinked = false;
 
     isBrightIDLinked = false;
@@ -539,7 +541,19 @@ class IdchainRegistrationModel {
 
             // console.log(response);
 
-            return response.ok;
+            if (response.ok === true) {
+                const responseJson = await response.json();
+
+                // console.log(responseJson);
+
+                this.brightIDLinkedWallets = responseJson.data.contextIds;
+
+                return true;
+            }
+
+            this.brightIDLinkedWallets = [];
+
+            return false;
         } catch (e) {
             // console.error(e);
             // console.log(e);

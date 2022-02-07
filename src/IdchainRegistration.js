@@ -32,6 +32,8 @@ function IdchainRegistration(props) {
 
     const [qrCodeIdchainUrl, setQrCodeIdchainUrl] = useState("");
 
+    const [brightIDLinkedWallets, setBrightIDLinkedWallets] = useState([]);
+
     const [isBrightIDIdchainLinked, setIsBrightIDIdchainLinked] =
         useState(false);
 
@@ -258,6 +260,8 @@ function IdchainRegistration(props) {
                     await registration.initIsBrightIDIdchainLinked();
 
                 setIsBrightIDIdchainLinked(isBrightIDIdchainLinked);
+
+                setBrightIDLinkedWallets(registration.brightIDLinkedWallets);
 
                 await timeout(1000);
             }
@@ -546,6 +550,10 @@ function IdchainRegistration(props) {
 
     function hasConnectedWallet() {
         return walletAddress !== "";
+    }
+
+    function hasMultipleBrightIDIdchainLinked() {
+        return brightIDLinkedWallets.length > 1;
     }
 
     function hasBrightIDIdchainLinked() {
@@ -1165,6 +1173,50 @@ function IdchainRegistration(props) {
                         </p>
                     </div>
                     <div className="idchain-registration-step__feedback">
+                        {!stepObtainGasTokensComplete &&
+                            hasMultipleBrightIDIdchainLinked() && (
+                                <div className="idchain-registration-step__response idchain-registration-step__response--alert">
+                                    <div>
+                                        <h3>Notice</h3>
+                                        It looks like you have multiple wallets
+                                        linked to your BrightID account. While
+                                        this is fine for verification, BrightID
+                                        will only ever issue gas tokens to each
+                                        BrightID account once. So, if you've
+                                        previously obtained tokens on one of the
+                                        other linked wallets then you will never
+                                        be able to claim tokens on this step.
+                                        You will need to transfer yourself some
+                                        of the previously claimed tokens from
+                                        your other wallet. For reference you can
+                                        see all the wallets you've linked below.
+                                        <br />
+                                        <br />
+                                        If you no longer have access to the
+                                        wallet you previously claimed with
+                                        please post a request in the song a day
+                                        discord's "questions" channel and a
+                                        moderator can send you some tokens.
+                                        <br />
+                                        <h3>All linked wallets</h3>
+                                        <ul class="idchain-registration-step__description-wallet-list">
+                                            {brightIDLinkedWallets.map(
+                                                (
+                                                    brightIDLinkedWallet,
+                                                    index
+                                                ) => (
+                                                    <li
+                                                        class="idchain-registration-step__description-wallet-address"
+                                                        key={index}
+                                                    >
+                                                        {brightIDLinkedWallet}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
                         {stepObtainGasTokensError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
                                 {stepObtainGasTokensError}
