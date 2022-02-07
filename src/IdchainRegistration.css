@@ -172,6 +172,12 @@
     border-radius: var(--borderRadius);
 }
 
+.idchain-registration-step__description-wallet-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 .idchain-registration-step__description-wallet-address {
     display: block;
     font-size: 12px;
