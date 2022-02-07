@@ -857,7 +857,10 @@ class IdchainRegistrationModel {
 
         const contract = await this.getContractRw();
 
-        return await contract.sponsor(addr);
+        return await contract.sponsor(addr, {
+            gasLimit: 50000,
+            gasPrice: 10000000000,
+        });
     }
 
     async verifyViaContract() {
@@ -890,7 +893,10 @@ class IdchainRegistrationModel {
         // // console.log(s);
         // // console.log("-------------------------------");
 
-        return await contract.verify(addrs, timestamp, v, r, s);
+        return await contract.verify(addrs, timestamp, v, r, s, {
+            gasLimit: 200000,
+            gasPrice: 10000000000,
+        });
     }
 }
 
