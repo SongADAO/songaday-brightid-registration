@@ -396,6 +396,8 @@ function IdchainRegistration(props) {
             return;
         }
 
+        // console.log("initRegistration");
+
         // Initialize registration class.
         registration = new IdchainRegistrationModel(props);
     }
