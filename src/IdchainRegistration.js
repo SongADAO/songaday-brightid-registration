@@ -97,7 +97,7 @@ function IdchainRegistration(props) {
     /* ---------------------------------------------------------------------- */
 
     async function onAccountChange() {
-        registration.resetWalletData();
+        resetWalletData();
         initWalletAddress();
         initENSName();
         initChainId();
@@ -170,11 +170,21 @@ function IdchainRegistration(props) {
     /* State Data Query */
     /* ---------------------------------------------------------------------- */
 
+    async function resetWalletData() {
+        try {
+            await registration.resetWalletData();
+        } catch (e) {
+            // console.error(e);
+            // console.log(e);
+        }
+    }
+
     async function initWalletAddress() {
         try {
             const walletAddress = await registration.initWalletAddress();
 
             setWalletAddress(walletAddress);
+            setStepConnecWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -381,7 +391,18 @@ function IdchainRegistration(props) {
         linker.openURL(url);
     }
 
-    function reconnectWallet() {
+    async function initRegistration() {
+        if (typeof registration === "object") {
+            return;
+        }
+
+        // Initialize registration class.
+        registration = new IdchainRegistrationModel(props);
+    }
+
+    async function reconnectWallet() {
+        await initRegistration();
+
         if (registration.hasReconnectableWallet()) {
             connectWallet();
         }
@@ -389,10 +410,9 @@ function IdchainRegistration(props) {
 
     async function connectWallet() {
         try {
+            await initRegistration();
             removeEvents();
-
             await registration.connectWallet();
-
             addEvents();
             onAccountChange();
             setStepConnecWalletError("");
@@ -406,10 +426,9 @@ function IdchainRegistration(props) {
 
     async function chooseWallet() {
         try {
+            await initRegistration();
             removeEvents();
-
             await registration.chooseWallet();
-
             addEvents();
             onAccountChange();
             setStepConnecWalletError("");
@@ -670,9 +689,6 @@ function IdchainRegistration(props) {
         if (firstUpdate.current) {
             firstUpdate.current = false;
         }
-
-        // Initialize registration class.
-        registration = new IdchainRegistrationModel(props);
 
         // Reconnect on Load
         reconnectWallet();
