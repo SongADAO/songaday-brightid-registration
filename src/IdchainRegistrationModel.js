@@ -211,6 +211,10 @@ class IdchainRegistrationModel {
 
     deepLinkPrefix = "";
 
+    relaySponsorURL = "";
+
+    relayVerificationURL = "";
+
     faucetClaimURL = "";
 
     mainnetRpcUrl = "";
@@ -239,6 +243,8 @@ class IdchainRegistrationModel {
         this.context = props.context;
         this.contractAddr = props.contractAddr;
         this.deepLinkPrefix = props.deepLinkPrefix;
+        this.relaySponsorURL = props.relaySponsorURL;
+        this.relayVerificationURL = props.relayVerificationURL;
         this.faucetClaimURL = props.faucetClaimURL;
         this.mainnetRpcUrl = props.mainnetRpcUrl;
         this.walletConnectInfuraId = props.walletConnectInfuraId;
@@ -269,6 +275,10 @@ class IdchainRegistrationModel {
     /* ---------------------------------------------------------------------- */
 
     async initWeb3Modal() {
+        if (typeof this.web3Modal === "object") {
+            return;
+        }
+
         console.log("initWeb3Modal");
 
         const providerOptions = {
@@ -285,74 +295,49 @@ class IdchainRegistrationModel {
         providerOptions.walletconnect.options.rpc[this.registrationChainId] =
             this.registrationRpcUrl;
 
-        const web3Modal = new Web3Modal({
+        this.web3Modal = new Web3Modal({
             network: "mainnet", // optional
             cacheProvider: true, // optional
             providerOptions, // required
         });
-
-        return web3Modal;
     }
 
     async initInstance() {
+        if (typeof this.web3Instance === "object") {
+            return;
+        }
+
         console.log("initInstance");
 
-        const web3Modal = await this.getWeb3Modal();
+        await this.initWeb3Modal();
 
-        const web3Instance = await web3Modal.connect();
-
-        return web3Instance;
-    }
-
-    async getWeb3Modal() {
-        console.log("getWeb3Modal");
-
-        if (typeof this.web3Modal === "object") {
-            return this.web3Modal;
-        }
-
-        const web3Modal = await this.initWeb3Modal();
-
-        this.web3Modal = web3Modal;
-
-        return this.web3Modal;
-    }
-
-    async getInstance() {
-        console.log("getInstance");
-
-        if (typeof this.web3Instance === "object") {
-            return this.web3Instance;
-        }
-
-        const web3Instance = await this.initInstance();
+        const web3Instance = await this.web3Modal.connect();
 
         this.web3Instance = web3Instance;
-
-        return this.web3Instance;
     }
 
-    async getFreshInstance() {
-        console.log("getFreshInstance");
+    async initFreshInstance() {
+        console.log("initFreshInstance");
 
-        const web3Modal = await this.getWeb3Modal();
+        await this.initWeb3Modal();
 
-        web3Modal.clearCachedProvider();
+        await this.web3Modal.clearCachedProvider();
+        localStorage.removeItem("walletconnect");
+        localStorage.removeItem("WALLETCONNECT_DEEPLINK_CHOICE");
+        localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
 
-        const web3Instance = await this.initInstance();
+        const web3Instance = await this.web3Modal.connect();
 
         this.web3Instance = web3Instance;
-
-        return this.web3Instance;
     }
 
     /* Providers */
     /* ---------------------------------------------------------------------- */
 
     async getProvider() {
-        const instance = await this.getInstance();
+        await this.initInstance();
 
-        return new ethers.providers.Web3Provider(instance);
+        return new ethers.providers.Web3Provider(this.web3Instance);
     }
 
     getMainnetProvider() {
@@ -424,6 +409,8 @@ class IdchainRegistrationModel {
         ) {
             return this.walletAddress;
         }
+
+        console.log("getWalletAddress");
 
         this.walletAddress = await this.queryWalletAddress();
 
@@ -548,7 +535,10 @@ class IdchainRegistrationModel {
 
                 this.brightIDLinkedWallets = responseJson.data.contextIds;
 
-                return true;
+                return (
+                    responseJson.data.contextIds[0].toLowerCase() ===
+                    contextId.toLowerCase()
+                );
             }
 
             if (response.status === 403) {
@@ -588,7 +578,14 @@ class IdchainRegistrationModel {
             // console.log(response);
 
             if (response.ok === true) {
-                return true;
+                const responseJson = await response.json();
+
+                // console.log(responseJson);
+
+                return (
+                    responseJson.data.contextIds[0].toLowerCase() ===
+                    contextId.toLowerCase()
+                );
             }
 
             if (response.status === 403) {
@@ -685,6 +682,8 @@ class IdchainRegistrationModel {
 
     async initWalletAddress() {
         try {
+            console.log("initWalletAddress");
+
             this.walletAddress = await this.queryWalletAddress();
 
             return this.walletAddress;
@@ -789,11 +788,11 @@ class IdchainRegistrationModel {
     /* ---------------------------------------------------------------------- */
 
     async connectWallet() {
-        return await this.getInstance();
+        await this.initInstance();
     }
 
     async chooseWallet() {
-        return await this.getFreshInstance();
+        await this.initFreshInstance();
     }
 
     async faucetClaim() {
@@ -911,6 +910,34 @@ class IdchainRegistrationModel {
             gasLimit: 200000,
             gasPrice: 10000000000,
         });
+    }
+
+    async sponsorViaRelay() {
+        const addr = await this.getWalletAddress();
+
+        const request = new Request(this.relaySponsorURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({ addr: addr }),
+        });
+
+        return await fetch(request);
+    }
+
+    async verifyViaRelay() {
+        const addr = await this.getWalletAddress();
+
+        const request = new Request(this.relayVerificationURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({ addr: addr }),
+        });
+
+        return await fetch(request);
     }
 }
 
