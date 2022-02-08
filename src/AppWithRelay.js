@@ -1,8 +1,8 @@
 import logo from "./logo.png";
 import "./App.css";
-import IdchainRegistration from "./IdchainRegistration";
+import IdchainRegistrationViaRelay from "./IdchainRegistrationViaRelay";
 
-function App() {
+function AppWithRelay() {
     return (
         <div className="App">
             <header className="App-header">
@@ -14,25 +14,21 @@ function App() {
             </header>
             <main>
                 <div className="App-idchain-registration">
-                    <IdchainRegistration
+                    <IdchainRegistrationViaRelay
                         appStoreAndroid="https://play.google.com/store/apps/details?id=org.brightid"
                         appStoreIos="https://apps.apple.com/us/app/brightid/id1428946820"
                         brightIdMeetUrl="https://meet.brightid.org"
                         context="snapshot"
-                        contractAddr="0x81591DC4997A76A870c13D383F8491B288E09344"
+                        // contractAddr="0x81591DC4997A76A870c13D383F8491B288E09344"
+                        contractAddr="0x62b008b2593a175BB33FFFbe8a11a92939B5A67C"
                         deepLinkPrefix="brightid://link-verification/http:%2f%2fnode.brightid.org"
-                        faucetClaimURL="https://idchain.one/begin/api/claim"
                         mainnetRpcUrl="https://mainnet.infura.io/v3/60a7b2c16321439a917c9e74a994f7df"
                         walletConnectInfuraId="60a7b2c16321439a917c9e74a994f7df"
-                        registrationBlockExplorerUrl="https://explorer.idchain.one"
-                        registrationBlockExplorerTxnPath="/tx/"
                         registrationChainId="74"
-                        registrationChainName="IDChain"
-                        registrationIconUrl="https://apps.brightid.org/logos/idchain.png"
                         registrationRpcUrl="https://idchain.one/rpc/"
-                        registrationTokenDecimal="18"
-                        registrationTokenName="Eidi"
                         verificationUrl="https://app.brightid.org/node/v5/verifications"
+                        relayVerificationURL="https://idchain.songadao.org/idchain-registration-relay/register"
+                        // relayVerificationURL="http://localhost:5001/register"
                     />
                 </div>
             </main>
@@ -50,4 +46,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppWithRelay;

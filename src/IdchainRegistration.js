@@ -59,7 +59,7 @@ function IdchainRegistration(props) {
     const [isVerifiedViaContractTxnId, setIsVerifiedViaContractTxnId] =
         useState(null);
 
-    const [stepConnecWalletError, setStepConnecWalletError] = useState("");
+    const [stepConnectWalletError, setStepConnectWalletError] = useState("");
 
     const [
         stepSwitchToIDChainNetworkError,
@@ -95,6 +95,21 @@ function IdchainRegistration(props) {
 
     /* Web3 Data Init & Monitoring */
     /* ---------------------------------------------------------------------- */
+
+    async function onAccountDisconnect() {
+        resetWalletData();
+        setWalletAddress("");
+        setENSName("");
+        setChainId("");
+        setGasBalance("");
+        setCanAutoSwitchNetworks("");
+        setQrCodeUrl("");
+        setQrCodeIdchainUrl("");
+        setBrightIDLinkedWallets("");
+        setIsBrightIDLinked("");
+        setIsSponsoredViaContract("");
+        setIsVerifiedViaContract("");
+    }
 
     async function onAccountChange() {
         resetWalletData();
@@ -184,7 +199,7 @@ function IdchainRegistration(props) {
             const walletAddress = await registration.initWalletAddress();
 
             setWalletAddress(walletAddress);
-            setStepConnecWalletError("");
+            setStepConnectWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
@@ -396,7 +411,7 @@ function IdchainRegistration(props) {
             return;
         }
 
-        // console.log("initRegistration");
+        console.log("initRegistration");
 
         // Initialize registration class.
         registration = new IdchainRegistrationModel(props);
@@ -412,33 +427,45 @@ function IdchainRegistration(props) {
 
     async function connectWallet() {
         try {
+            setStepConnectWalletError("");
             await initRegistration();
             removeEvents();
             await registration.connectWallet();
             addEvents();
             onAccountChange();
-            setStepConnecWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setStepConnecWalletError(e.message);
+            onAccountDisconnect();
+
+            if (e.message === "User Rejected") {
+                setStepConnectWalletError("Unlock your wallet to continue");
+            } else {
+                setStepConnectWalletError(e.message);
+            }
         }
     }
 
     async function chooseWallet() {
         try {
+            setStepConnectWalletError("");
             await initRegistration();
             removeEvents();
             await registration.chooseWallet();
             addEvents();
             onAccountChange();
-            setStepConnecWalletError("");
         } catch (e) {
             // console.error(e);
             // console.log(e);
 
-            setStepConnecWalletError(e.message);
+            onAccountDisconnect();
+
+            if (e.message === "User Rejected") {
+                setStepConnectWalletError("Unlock your wallet to continue");
+            } else {
+                setStepConnectWalletError(e.message);
+            }
         }
     }
 
@@ -608,7 +635,7 @@ function IdchainRegistration(props) {
         return status === true ? "complete" : "incomplete";
     }
 
-    function stepConnecWalletComplete() {
+    function stepConnectWalletComplete() {
         return hasConnectedWallet();
     }
 
@@ -643,12 +670,12 @@ function IdchainRegistration(props) {
         return status === true ? "active" : "inactive";
     }
 
-    function stepConnecWalletActive() {
+    function stepConnectWalletActive() {
         return true;
     }
 
     function stepBrightIDLinkedIdchainActive() {
-        return stepConnecWalletComplete() && stepConnecWalletActive();
+        return stepConnectWalletComplete() && stepConnectWalletActive();
     }
 
     function stepBrightIDLinkedActive() {
@@ -835,10 +862,10 @@ function IdchainRegistration(props) {
                         idchain-registration-step
                         idchain-registration-step--connect
                         idchain-registration-step--${getStepCompleteString(
-                            stepConnecWalletComplete()
+                            stepConnectWalletComplete()
                         )}
                         idchain-registration-step--${getStepActiveString(
-                            stepConnecWalletActive()
+                            stepConnectWalletActive()
                         )}
                     `}
                 >
@@ -885,9 +912,9 @@ function IdchainRegistration(props) {
                         )}
                     </div>
                     <div className="idchain-registration-step__feedback">
-                        {stepConnecWalletError && (
+                        {stepConnectWalletError && (
                             <div className="idchain-registration-step__response idchain-registration-step__response--error">
-                                {stepConnecWalletError}
+                                {stepConnectWalletError}
                             </div>
                         )}
                     </div>

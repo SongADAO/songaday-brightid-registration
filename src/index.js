@@ -1,12 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppWithoutRelay from "./AppWithoutRelay";
+import AppWithRelay from "./AppWithRelay";
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <BrowserRouter basename="/idchain-registration-simple">
+            <Routes>
+                <Route path="/" element={<AppWithoutRelay />} />
+                <Route path="/gasless" element={<AppWithRelay />} />
+            </Routes>
+        </BrowserRouter>
     </React.StrictMode>,
     document.getElementById("root")
 );
