@@ -551,6 +551,12 @@ class IdchainRegistrationModel {
                 return true;
             }
 
+            if (response.status === 403) {
+                this.brightIDLinkedWallets = [];
+
+                return true;
+            }
+
             this.brightIDLinkedWallets = [];
 
             return false;
@@ -581,7 +587,15 @@ class IdchainRegistrationModel {
 
             // console.log(response);
 
-            return response.ok;
+            if (response.ok === true) {
+                return true;
+            }
+
+            if (response.status === 403) {
+                return true;
+            }
+
+            return false;
         } catch (e) {
             // console.error(e);
             // console.log(e);
