@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-class IdchainRegistrationModel {
+class BrightIDRegistrationModel {
     contractAbi = [
         {
             type: "constructor",
@@ -941,4 +941,4 @@ class IdchainRegistrationModel {
     }
 }
 
-export default IdchainRegistrationModel;
+export default BrightIDRegistrationModel;

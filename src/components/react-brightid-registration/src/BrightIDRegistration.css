@@ -1,4 +1,4 @@
-.idchain-registration {
+.brightid-registration {
     --statusCompleteIconBorderWidth: 7px;
     --statusCompleteIconHeight: 24px;
     --statusCompleteIconWidth: 12px;
@@ -44,12 +44,12 @@
 /* Buttons */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration {
+.brightid-registration {
     padding: var(--paddingSize);
     font-size: var(--fontSize);
 }
 
-.idchain-registration-step__button {
+.brightid-registration-step__button {
     align-items: center;
     background: var(--stepButtonBackgroundColor);
     border: 0;
@@ -64,14 +64,14 @@
     padding: var(--paddingSize);
 }
 
-.idchain-registration-step__button:hover {
+.brightid-registration-step__button:hover {
     background: var(--stepButtonBackgroundColorHover);
 }
 
 /* Step */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step {
+.brightid-registration-step {
     background: var(--stepBackgroundColor);
     border-radius: var(--borderRadius);
     color: var(--stepTextColor);
@@ -79,41 +79,41 @@
     padding: var(--paddingSize);
 }
 
-.idchain-registration-step__main {
+.brightid-registration-step__main {
     align-items: center;
     display: flex;
     justify-content: center;
 }
 
-.idchain-registration-step__status {
+.brightid-registration-step__status {
     flex: 0 0 var(--statusIconSize);
     padding-right: var(--paddingSize);
 }
 
-.idchain-registration-step__header {
+.brightid-registration-step__header {
     flex: 1;
 }
 
-.idchain-registration-step__action {
+.brightid-registration-step__action {
     flex: 0 0 75px;
     padding-left: var(--paddingSize);
 }
 
-.idchain-registration-step__heading {
+.brightid-registration-step__heading {
     font-size: 18px;
     margin: 0;
     padding-left: calc(var(--paddingSize) / 2);
 }
 
-.idchain-registration-step__action--app-store {
+.brightid-registration-step__action--app-store {
     flex: 0 0 125px;
 }
 
-.idchain-registration-step__app-store-image {
+.brightid-registration-step__app-store-image {
     max-width: 100%;
 }
 
-.idchain-registration-step__action-prevented {
+.brightid-registration-step__action-prevented {
     display: block;
     font-size: 0.8em;
     text-align: center;
@@ -122,77 +122,77 @@
 /* Description */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step__description {
+.brightid-registration-step__description {
     background: var(--stepDescriptionBackgroundColor);
     border-radius: var(--borderRadius);
     margin-top: var(--paddingSize);
     padding: var(--paddingSize);
 }
 
-.idchain-registration-step__description-link,
-.idchain-registration-step__description-link:visited {
+.brightid-registration-step__description-link,
+.brightid-registration-step__description-link:visited {
     color: var(--stepDescriptionLinkColor);
 }
 
-.idchain-registration-step__description-link:hover,
-.idchain-registration-step__description-link:active {
+.brightid-registration-step__description-link:hover,
+.brightid-registration-step__description-link:active {
     color: var(--stepDescriptionLinkHoverColor);
 }
 
-.idchain-registration-step__description-p {
+.brightid-registration-step__description-p {
     margin: 0;
 }
 
-.idchain-registration-step__description-p
-    + .idchain-registration-step__description-p {
+.brightid-registration-step__description-p
+    + .brightid-registration-step__description-p {
     margin-top: 1em;
 }
 
-.idchain-registration-step__description-p--2col-img {
+.brightid-registration-step__description-p--2col-img {
 }
 
-.idchain-registration-step__description-p--2col-img img {
+.brightid-registration-step__description-p--2col-img img {
     width: 48%;
 }
 
-.idchain-registration-step__description-p--2col-img img + img {
+.brightid-registration-step__description-p--2col-img img + img {
     margin-left: 4%;
 }
 
-.idchain-registration-step__description-button-container {
+.brightid-registration-step__description-button-container {
     text-align: center;
 }
 
-.idchain-registration-step__description-qrcode-container {
+.brightid-registration-step__description-qrcode-container {
     text-align: center;
 }
 
-.idchain-registration-step__description-qrcode-container > svg {
+.brightid-registration-step__description-qrcode-container > svg {
     border: 10px solid #fff;
     border-radius: var(--borderRadius);
 }
 
-.idchain-registration-step__description-wallet-list {
+.brightid-registration-step__description-wallet-list {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.idchain-registration-step__description-wallet-address {
+.brightid-registration-step__description-wallet-address {
     display: block;
     font-size: 12px;
 }
 
-.idchain-registration-step--mobile {
+.brightid-registration-step--mobile {
     display: none;
 }
 
 @media only screen and (hover: none) and (pointer: coarse) {
-    .idchain-registration-step--mobile {
+    .brightid-registration-step--mobile {
         display: block;
     }
 
-    .idchain-registration-step--desktop {
+    .brightid-registration-step--desktop {
         display: none;
     }
 }
@@ -200,15 +200,15 @@
 /* Interaction Info and Errors */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step__loading-icon {
+.brightid-registration-step__loading-icon {
     display: inline-block;
     height: 20px;
     position: relative;
     width: 20px;
 }
 
-.idchain-registration-step__loading-icon div {
-    animation: idchain-registration-step__loading-icon 1.2s
+.brightid-registration-step__loading-icon div {
+    animation: brightid-registration-step__loading-icon 1.2s
         cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border: 2px solid #fff;
     border-color: #fff transparent transparent transparent;
@@ -221,19 +221,19 @@
     width: 16px;
 }
 
-.idchain-registration-step__loading-icon div:nth-child(1) {
+.brightid-registration-step__loading-icon div:nth-child(1) {
     animation-delay: -0.45s;
 }
 
-.idchain-registration-step__loading-icon div:nth-child(2) {
+.brightid-registration-step__loading-icon div:nth-child(2) {
     animation-delay: -0.3s;
 }
 
-.idchain-registration-step__loading-icon div:nth-child(3) {
+.brightid-registration-step__loading-icon div:nth-child(3) {
     animation-delay: -0.15s;
 }
 
-@keyframes idchain-registration-step__loading-icon {
+@keyframes brightid-registration-step__loading-icon {
     0% {
         transform: rotate(0deg);
     }
@@ -246,7 +246,7 @@
 /* Status Response */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step__response {
+.brightid-registration-step__response {
     align-items: center;
     background: var(--stepResponseBackgroundColor);
     border-radius: var(--borderRadius);
@@ -257,25 +257,25 @@
     padding: var(--paddingSize);
 }
 
-.idchain-registration-step__response-loading-icon {
+.brightid-registration-step__response-loading-icon {
     margin-right: 10px;
 }
 
-.idchain-registration-step__response-message {
+.brightid-registration-step__response-message {
     flex: 1;
 }
 
-.idchain-registration-step__response--success {
+.brightid-registration-step__response--success {
     background: var(--stepResponseSuccessBackgroundColor);
     color: var(--stepResponseSuccessTextColor);
 }
 
-.idchain-registration-step__response--error {
+.brightid-registration-step__response--error {
     background: var(--stepResponseErrorBackgroundColor);
     color: var(--stepResponseErrorTextColor);
 }
 
-.idchain-registration-step__response-link {
+.brightid-registration-step__response-link {
     color: var(--stepResponseTextColor);
     text-decoration: underline;
 }
@@ -283,7 +283,7 @@
 /* Status Icon */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step__status-icon {
+.brightid-registration-step__status-icon {
     background: #aaa;
     border-radius: var(--borderRadius);
     height: var(--statusIconSize);
@@ -294,14 +294,15 @@
 /* Status Icon - Incomplete */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step--incomplete .idchain-registration-step__status-icon {
+.brightid-registration-step--incomplete
+    .brightid-registration-step__status-icon {
     background: var(--statusIncompleteBackgroundColor);
 }
 
-.idchain-registration-step--incomplete
-    .idchain-registration-step__status-icon:before,
-.idchain-registration-step--incomplete
-    .idchain-registration-step__status-icon:after {
+.brightid-registration-step--incomplete
+    .brightid-registration-step__status-icon:before,
+.brightid-registration-step--incomplete
+    .brightid-registration-step__status-icon:after {
     background-color: var(--statusIncompleteIconColor);
     bottom: 0;
     content: "\00a0";
@@ -316,25 +317,25 @@
     width: 80%;
 }
 
-.idchain-registration-step--incomplete
-    .idchain-registration-step__status-icon:before {
+.brightid-registration-step--incomplete
+    .brightid-registration-step__status-icon:before {
     transform: rotate(45deg);
 }
 
-.idchain-registration-step--incomplete
-    .idchain-registration-step__status-icon:after {
+.brightid-registration-step--incomplete
+    .brightid-registration-step__status-icon:after {
     transform: rotate(-45deg);
 }
 
 /* Status Icon - Complete */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step--complete .idchain-registration-step__status-icon {
+.brightid-registration-step--complete .brightid-registration-step__status-icon {
     background: var(--statusCompleteBackgroundColor);
 }
 
-.idchain-registration-step--complete
-    .idchain-registration-step__status-icon:after {
+.brightid-registration-step--complete
+    .brightid-registration-step__status-icon:after {
     border-bottom: var(--statusCompleteIconBorderWidth) solid
         var(--statusCompleteIconColor);
     border-right: var(--statusCompleteIconBorderWidth) solid
@@ -356,20 +357,20 @@
 /* Status Changes */
 /* -------------------------------------------------------------------------- */
 
-.idchain-registration-step--complete .idchain-registration-step__action,
-.idchain-registration-step--Xinactive .idchain-registration-step__action {
+.brightid-registration-step--complete .brightid-registration-step__action,
+.brightid-registration-step--Xinactive .brightid-registration-step__action {
     display: none;
 }
 
-.idchain-registration-step--connect .idchain-registration-step__action {
+.brightid-registration-step--connect .brightid-registration-step__action {
     display: block;
 }
 
-.idchain-registration-step--complete
-    .idchain-registration-step__description--action-hide-on-complete {
+.brightid-registration-step--complete
+    .brightid-registration-step__description--action-hide-on-complete {
     display: none;
 }
 
-.idchain-registration-step--inactive {
+.brightid-registration-step--inactive {
     opacity: 0.5;
 }

@@ -1,0 +1,35 @@
+{
+  "name": "react-brightid-registration",
+  "version": "1.0.5",
+  "description": "React BrightID Registration",
+  "main": "build/index.js",
+  "files": [
+    "build",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/SongADAO/react-brightid-registration.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf build",
+    "build": "npm run clean && cross-env NODE_ENV=production babel ./src --out-dir ./build --copy-files --ignore __tests__,spec.js,test.js,stories.js,__snapshots__"
+  },
+  "author": "SongADAO LCA",
+  "license": "MIT",
+  "peerDependencies": {
+    "@walletconnect/web3-provider": "^1.7.1",
+    "ethers": "^5.5.4",
+    "qrcode.react": "^1.0.1",
+    "react": "^17.0.2",
+    "web3modal": "^1.9.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "cross-env": "^7.0.3"
+  }
+}
