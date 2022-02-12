@@ -1,6 +1,6 @@
 import logo from "./logo.png";
 import "./App.css";
-// import BrightIDRegistration from "./components/react-brightid-registration/src/BrightIDRegistration";
+// import { BrightIDRegistration } from "./components/react-brightid-registration/src";
 import { BrightIDRegistration } from "react-brightid-registration";
 
 function AppWithoutRelay() {
