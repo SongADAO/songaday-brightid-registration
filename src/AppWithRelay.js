@@ -1,6 +1,6 @@
 import logo from "./logo.png";
 import "./App.css";
-// import BrightIDRegistrationViaRelay from "./components/react-brightid-registration/src/BrightIDRegistrationViaRelay";
+// import { BrightIDRegistrationViaRelay } from "./components/react-brightid-registration/src";
 import { BrightIDRegistrationViaRelay } from "react-brightid-registration";
 
 function AppWithRelay() {
@@ -20,8 +20,8 @@ function AppWithRelay() {
                         appStoreIos="https://apps.apple.com/us/app/brightid/id1428946820"
                         brightIdMeetUrl="https://meet.brightid.org"
                         context="snapshot"
-                        // contractAddr="0x81591DC4997A76A870c13D383F8491B288E09344"
-                        contractAddr="0x62b008b2593a175BB33FFFbe8a11a92939B5A67C"
+                        contractAddr="0x81591DC4997A76A870c13D383F8491B288E09344"
+                        // contractAddr="0x62b008b2593a175BB33FFFbe8a11a92939B5A67C"
                         deepLinkPrefix="brightid://link-verification/http:%2f%2fnode.brightid.org"
                         mainnetRpcUrl="https://mainnet.infura.io/v3/60a7b2c16321439a917c9e74a994f7df"
                         walletConnectInfuraId="60a7b2c16321439a917c9e74a994f7df"

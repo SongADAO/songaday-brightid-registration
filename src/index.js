@@ -12,7 +12,7 @@ ReactDOM.render(
         <BrowserRouter basename="/brightid-registration">
             <Routes>
                 <Route path="/" element={<AppWithRelay />} />
-                <Route path="/no-relay" element={<AppWithoutRelay />} />
+                <Route path="/without-relay" element={<AppWithoutRelay />} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>,
