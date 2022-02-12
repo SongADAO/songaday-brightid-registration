@@ -1,6 +1,7 @@
 import logo from "./logo.png";
 import "./App.css";
-import IdchainRegistration from "./IdchainRegistration";
+// import BrightIDRegistration from "./components/react-brightid-registration/src/BrightIDRegistration";
+import { BrightIDRegistration } from "react-brightid-registration";
 
 function AppWithoutRelay() {
     return (
@@ -13,8 +14,8 @@ function AppWithoutRelay() {
                 />
             </header>
             <main>
-                <div className="App-idchain-registration">
-                    <IdchainRegistration
+                <div className="App-brightid-registration">
+                    <BrightIDRegistration
                         appStoreAndroid="https://play.google.com/store/apps/details?id=org.brightid"
                         appStoreIos="https://apps.apple.com/us/app/brightid/id1428946820"
                         brightIdMeetUrl="https://meet.brightid.org"

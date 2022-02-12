@@ -2,17 +2,17 @@ import googlePlay from "./google-play.png";
 import appStore from "./app-store.png";
 import openAchievementsSS from "./open-achievements-ss.png";
 import isVerifiedSS from "./is-verified-ss.png";
-import "./IdchainRegistration.css";
+import "./BrightIDRegistration.css";
 import React, { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode.react";
-import IdchainRegistrationModel from "./IdchainRegistrationModel";
+import BrightIDRegistrationModel from "./BrightIDRegistrationModel";
 import DeepLinker from "./DeepLinker";
 
 let registration;
 
 let changePollingInterval = 0;
 
-function IdchainRegistration(props) {
+function BrightIDRegistration(props) {
     /* State */
     /* ---------------------------------------------------------------------- */
 
@@ -414,7 +414,7 @@ function IdchainRegistration(props) {
         console.log("initRegistration");
 
         // Initialize registration class.
-        registration = new IdchainRegistrationModel(props);
+        registration = new BrightIDRegistrationModel(props);
     }
 
     async function reconnectWallet() {
@@ -727,16 +727,16 @@ function IdchainRegistration(props) {
     /* ---------------------------------------------------------------------- */
 
     return (
-        <div className="idchain-registration">
+        <div className="brightid-registration">
             <div>
-                <section className={`idchain-registration-step`}>
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                <section className={`brightid-registration-step`}>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Install BrightID
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action idchain-registration-step__action--app-store">
+                        <div className="brightid-registration-step__action brightid-registration-step__action--app-store">
                             <div>
                                 <a
                                     href={props.appStoreAndroid}
@@ -744,7 +744,7 @@ function IdchainRegistration(props) {
                                     rel="noreferrer noopener"
                                 >
                                     <img
-                                        className="idchain-registration-step__app-store-image"
+                                        className="brightid-registration-step__app-store-image"
                                         src={googlePlay}
                                         alt="Get it on Google Play"
                                     />
@@ -757,7 +757,7 @@ function IdchainRegistration(props) {
                                     rel="noreferrer noopener"
                                 >
                                     <img
-                                        className="idchain-registration-step__app-store-image"
+                                        className="brightid-registration-step__app-store-image"
                                         src={appStore}
                                         alt="Download on App Store"
                                     />
@@ -765,51 +765,51 @@ function IdchainRegistration(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="idchain-registration-step__description">
-                        <p className="idchain-registration-step__description-p">
+                    <div className="brightid-registration-step__description">
+                        <p className="brightid-registration-step__description-p">
                             The first step is to install the BrightID app on
                             your mobile device.
                         </p>
                     </div>
                 </section>
-                <section className={`idchain-registration-step`}>
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                <section className={`brightid-registration-step`}>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Verify with BrightID
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {/* <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => verifyWithBrightID()}
                             >
                                 Get Verified
                             </button> */}
                         </div>
                     </div>
-                    <div className="idchain-registration-step__description">
-                        <p className="idchain-registration-step__description-p">
+                    <div className="brightid-registration-step__description">
+                        <p className="brightid-registration-step__description-p">
                             Once you have BrightID installed you need to become
                             verified in their system by participating in a
                             "Verification Party".
                         </p>
-                        <p className="idchain-registration-step__description-button-container">
+                        <p className="brightid-registration-step__description-button-container">
                             <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => verifyWithBrightID()}
                             >
                                 Find Verification Party
                             </button>
                         </p>
-                        <h3 className="idchain-registration-step__description-p">
+                        <h3 className="brightid-registration-step__description-p">
                             Support
                         </h3>
-                        <p className="idchain-registration-step__description-p">
+                        <p className="brightid-registration-step__description-p">
                             More details on becoming verified within the
                             BrightID system can be found at{" "}
                             <a
-                                className="idchain-registration-step__description-link"
+                                className="brightid-registration-step__description-link"
                                 href="https://brightid.gitbook.io/brightid/getting-verified"
                                 target="_blank"
                                 rel="noreferrer"
@@ -818,10 +818,10 @@ function IdchainRegistration(props) {
                             </a>
                             .
                         </p>
-                        <p className="idchain-registration-step__description-p">
+                        <p className="brightid-registration-step__description-p">
                             They also have a{" "}
                             <a
-                                className="idchain-registration-step__description-link"
+                                className="brightid-registration-step__description-link"
                                 href="https://discord.gg/xzhFEeK"
                                 target="_blank"
                                 rel="noreferrer"
@@ -830,10 +830,10 @@ function IdchainRegistration(props) {
                             </a>{" "}
                             for support.
                         </p>
-                        <h3 className="idchain-registration-step__description-p">
+                        <h3 className="brightid-registration-step__description-p">
                             After Verification
                         </h3>
-                        <p className="idchain-registration-step__description-p">
+                        <p className="brightid-registration-step__description-p">
                             After you have verified via a connection party, it
                             will take up to 10 minutes for you to become
                             verified in their system. You will know when you're
@@ -843,14 +843,14 @@ function IdchainRegistration(props) {
                             for where to look in the app.
                         </p>
 
-                        <p className="idchain-registration-step__description-p idchain-registration-step__description-p--2col-img">
+                        <p className="brightid-registration-step__description-p brightid-registration-step__description-p--2col-img">
                             <img
-                                className="idchain-registration-step__app-store-image"
+                                className="brightid-registration-step__app-store-image"
                                 src={openAchievementsSS}
                                 alt="Open Achievements"
                             />
                             <img
-                                className="idchain-registration-step__app-store-image"
+                                className="brightid-registration-step__app-store-image"
                                 src={isVerifiedSS}
                                 alt="Check Is Verified"
                             />
@@ -859,61 +859,61 @@ function IdchainRegistration(props) {
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--connect
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--connect
+                        brightid-registration-step--${getStepCompleteString(
                             stepConnectWalletComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepConnectWalletActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Connect Wallet
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => chooseWallet()}
                             >
                                 Connect
                             </button>
                         </div>
                     </div>
-                    <div className="idchain-registration-step__description">
+                    <div className="brightid-registration-step__description">
                         {ensName && (
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>ENS: </strong>
-                                <span className="idchain-registration-step__description-ens-address">
+                                <span className="brightid-registration-step__description-ens-address">
                                     {ensName}
                                 </span>
                             </p>
                         )}
                         {walletAddress && (
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Address: </strong>
-                                <span className="idchain-registration-step__description-wallet-address">
+                                <span className="brightid-registration-step__description-wallet-address">
                                     {walletAddress}
                                 </span>
                             </p>
                         )}
                         {!walletAddress && (
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Address: </strong>
                                 <span>Not Connected</span>
                             </p>
                         )}
                     </div>
-                    <div className="idchain-registration-step__feedback">
+                    <div className="brightid-registration-step__feedback">
                         {stepConnectWalletError && (
-                            <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                            <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                 {stepConnectWalletError}
                             </div>
                         )}
@@ -921,28 +921,28 @@ function IdchainRegistration(props) {
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--brightid-link-idchain
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--brightid-link-idchain
+                        brightid-registration-step--${getStepCompleteString(
                             stepBrightIDLinkedIdchainComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepBrightIDLinkedIdchainActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Link Wallet to IDChain
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {/* <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => linkAddressToBrightIDIdchain()}
                             >
                                 Link Address
@@ -952,20 +952,20 @@ function IdchainRegistration(props) {
                     {qrCodeIdchainUrl && (
                         <div
                             className="
-                            idchain-registration-step__description
-                            idchain-registration-step__description--action
-                            idchain-registration-step__description--action-hide-on-complete
+                            brightid-registration-step__description
+                            brightid-registration-step__description--action
+                            brightid-registration-step__description--action-hide-on-complete
                         "
                         >
-                            <div className="idchain-registration-step--mobile">
-                                <p className="idchain-registration-step__description-p ">
+                            <div className="brightid-registration-step--mobile">
+                                <p className="brightid-registration-step__description-p ">
                                     If you're on the device with BrightID
                                     installed use this button to open BrightID
                                     and link your wallet.
                                 </p>
-                                <p className="idchain-registration-step__description-button-container">
+                                <p className="brightid-registration-step__description-button-container">
                                     <button
-                                        className="idchain-registration-step__button"
+                                        className="brightid-registration-step__button"
                                         onClick={() =>
                                             linkAddressToBrightIDIdchain()
                                         }
@@ -973,37 +973,37 @@ function IdchainRegistration(props) {
                                         Link Address
                                     </button>
                                 </p>
-                                <div className="idchain-registration-step__feedback">
+                                <div className="brightid-registration-step__feedback">
                                     {linkAddressToBrightIDIdchainError && (
-                                        <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                        <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                             {linkAddressToBrightIDIdchainError}
                                         </div>
                                     )}
                                 </div>
-                                <p className="idchain-registration-step--mobile">
+                                <p className="brightid-registration-step--mobile">
                                     <br />
                                 </p>
-                                <p className="idchain-registration-step__description-p">
+                                <p className="brightid-registration-step__description-p">
                                     If BrightID is installed on another device
                                     scan the QR code below with the "Scan a
                                     Code" button in the BrightID mobile app.
                                 </p>
                             </div>
-                            <div className="idchain-registration-step--desktop">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step--desktop">
+                                <p className="brightid-registration-step__description-p">
                                     Use the "Scan a Code" button in the BrightID
                                     app to scan the QR code below.
                                 </p>
                             </div>
-                            <p className="idchain-registration-step__description-qrcode-container">
+                            <p className="brightid-registration-step__description-qrcode-container">
                                 <QRCode
                                     renderAs="svg"
                                     size={200}
                                     value={qrCodeIdchainUrl}
                                 />
                             </p>
-                            <div className="idchain-registration-step--desktop">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step--desktop">
+                                <p className="brightid-registration-step__description-p">
                                     After linking, you'll get a confirmation in
                                     the BrightID app. Then just wait a few
                                     seconds and this website will update to
@@ -1012,32 +1012,32 @@ function IdchainRegistration(props) {
                             </div>
                         </div>
                     )}
-                    <div className="idchain-registration-step__feedback"></div>
+                    <div className="brightid-registration-step__feedback"></div>
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--brightid-link
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--brightid-link
+                        brightid-registration-step--${getStepCompleteString(
                             stepBrightIDLinkedComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepBrightIDLinkedActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Link Wallet to Snapshot
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {/* <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => linkAddressToBrightID()}
                             >
                                 Link Address
@@ -1047,56 +1047,56 @@ function IdchainRegistration(props) {
                     {qrCodeUrl && (
                         <div
                             className="
-                            idchain-registration-step__description
-                            idchain-registration-step__description--action
-                            idchain-registration-step__description--action-hide-on-complete
+                            brightid-registration-step__description
+                            brightid-registration-step__description--action
+                            brightid-registration-step__description--action-hide-on-complete
                         "
                         >
-                            <div className="idchain-registration-step--mobile">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step--mobile">
+                                <p className="brightid-registration-step__description-p">
                                     If you're on your mobile device just use
                                     this button to open BrightID and link your
                                     wallet.
                                 </p>
-                                <p className="idchain-registration-step__description-button-container">
+                                <p className="brightid-registration-step__description-button-container">
                                     <button
-                                        className="idchain-registration-step__button"
+                                        className="brightid-registration-step__button"
                                         onClick={() => linkAddressToBrightID()}
                                     >
                                         Link Address
                                     </button>
                                 </p>
-                                <div className="idchain-registration-step__feedback">
+                                <div className="brightid-registration-step__feedback">
                                     {linkAddressToBrightIDError && (
-                                        <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                                        <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                             {linkAddressToBrightIDError}
                                         </div>
                                     )}
                                 </div>
-                                <p className="idchain-registration-step--mobile">
+                                <p className="brightid-registration-step--mobile">
                                     <br />
                                 </p>
-                                <p className="idchain-registration-step__description-p">
+                                <p className="brightid-registration-step__description-p">
                                     If BrightID is installed on another device
                                     scan the QR code below with the "Scan a
                                     Code" button in the BrightID mobile app.
                                 </p>
                             </div>
-                            <div className="idchain-registration-step--desktop">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step--desktop">
+                                <p className="brightid-registration-step__description-p">
                                     Use the "Scan a Code" button in the BrightID
                                     app to scan the QR code below.
                                 </p>
                             </div>
-                            <p className="idchain-registration-step__description-qrcode-container">
+                            <p className="brightid-registration-step__description-qrcode-container">
                                 <QRCode
                                     renderAs="svg"
                                     size={200}
                                     value={qrCodeUrl}
                                 />
                             </p>
-                            <div className="idchain-registration-step--desktop">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step--desktop">
+                                <p className="brightid-registration-step__description-p">
                                     After linking, you'll get a confirmation in
                                     the BrightID app. Then just wait a few
                                     seconds and this website will update to
@@ -1105,32 +1105,32 @@ function IdchainRegistration(props) {
                             </div>
                         </div>
                     )}
-                    <div className="idchain-registration-step__feedback"></div>
+                    <div className="brightid-registration-step__feedback"></div>
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--${getStepCompleteString(
                             stepSwitchToIDChainNetworkComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepSwitchToIDChainNetworkActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Switch Wallet to IDChain Network
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {canAutoSwitchNetworks && (
                                 <button
-                                    className="idchain-registration-step__button"
+                                    className="brightid-registration-step__button"
                                     onClick={() => switchToIDChainNetwork()}
                                 >
                                     Switch
@@ -1141,40 +1141,40 @@ function IdchainRegistration(props) {
                     {!canAutoSwitchNetworks && (
                         <div
                             className="
-                                idchain-registration-step__description
-                                idchain-registration-step__description--action
-                                idchain-registration-step__description--action-hide-on-complete
+                                brightid-registration-step__description
+                                brightid-registration-step__description--action
+                                brightid-registration-step__description--action-hide-on-complete
                             "
                         >
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 In your wallet app create a new network with the
                                 following data and switch to that network.
                             </p>
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Network Name: </strong>
                                 {props.registrationChainName}
                             </p>
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>RPC URL: </strong>
                                 {props.registrationRpcUrl}
                             </p>
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Chain ID: </strong>
                                 {props.registrationChainId}
                             </p>
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Currency Symbol: </strong>
                                 {props.registrationTokenName}
                             </p>
-                            <p className="idchain-registration-step__description-p">
+                            <p className="brightid-registration-step__description-p">
                                 <strong>Block Explorer URL: </strong>
                                 {props.registrationBlockExplorerUrl}
                             </p>
                         </div>
                     )}
-                    <div className="idchain-registration-step__feedback">
+                    <div className="brightid-registration-step__feedback">
                         {stepSwitchToIDChainNetworkError && (
-                            <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                            <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                 {stepSwitchToIDChainNetworkError}
                             </div>
                         )}
@@ -1182,45 +1182,45 @@ function IdchainRegistration(props) {
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--${getStepCompleteString(
                             stepObtainGasTokensComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepObtainGasTokensActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Obtain IDChain Network Gas Tokens
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             <button
-                                className="idchain-registration-step__button"
+                                className="brightid-registration-step__button"
                                 onClick={() => faucetClaim()}
                             >
                                 Obtain
                             </button>
                         </div>
                     </div>
-                    <div className="idchain-registration-step__description">
-                        <p className="idchain-registration-step__description-p">
+                    <div className="brightid-registration-step__description">
+                        <p className="brightid-registration-step__description-p">
                             <strong>Balance: </strong>
-                            <span className="idchain-registration-step__description-balance">
+                            <span className="brightid-registration-step__description-balance">
                                 {gasBalance} {props.registrationTokenName}
                             </span>
                         </p>
                     </div>
-                    <div className="idchain-registration-step__feedback">
+                    <div className="brightid-registration-step__feedback">
                         {!stepObtainGasTokensComplete &&
                             hasMultipleBrightIDIdchainLinked() && (
-                                <div className="idchain-registration-step__response idchain-registration-step__response--alert">
+                                <div className="brightid-registration-step__response brightid-registration-step__response--alert">
                                     <div>
                                         <h3>Notice</h3>
                                         It looks like you have multiple wallets
@@ -1244,14 +1244,14 @@ function IdchainRegistration(props) {
                                         moderator can send you some tokens.
                                         <br />
                                         <h3>All linked wallets</h3>
-                                        <ul class="idchain-registration-step__description-wallet-list">
+                                        <ul class="brightid-registration-step__description-wallet-list">
                                             {brightIDLinkedWallets.map(
                                                 (
                                                     brightIDLinkedWallet,
                                                     index
                                                 ) => (
                                                     <li
-                                                        class="idchain-registration-step__description-wallet-address"
+                                                        class="brightid-registration-step__description-wallet-address"
                                                         key={index}
                                                     >
                                                         {brightIDLinkedWallet}
@@ -1263,21 +1263,21 @@ function IdchainRegistration(props) {
                                 </div>
                             )}
                         {stepObtainGasTokensError && (
-                            <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                            <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                 {stepObtainGasTokensError}
                             </div>
                         )}
                         {stepObtainGasTokensStatus && (
-                            <div className="idchain-registration-step__response">
-                                <div className="idchain-registration-step__response-loading-icon">
-                                    <div className="idchain-registration-step__loading-icon">
+                            <div className="brightid-registration-step__response">
+                                <div className="brightid-registration-step__response-loading-icon">
+                                    <div className="brightid-registration-step__loading-icon">
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                     </div>
                                 </div>
-                                <div className="idchain-registration-step__response-message">
+                                <div className="brightid-registration-step__response-message">
                                     <div>{stepObtainGasTokensStatus}</div>
                                 </div>
                             </div>
@@ -1286,28 +1286,28 @@ function IdchainRegistration(props) {
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--${getStepCompleteString(
                             stepSponsoredViaContractComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepSponsoredViaContractActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Become Sponsored on IDChain
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {stepSwitchToIDChainNetworkComplete() && (
                                 <button
-                                    className="idchain-registration-step__button"
+                                    className="brightid-registration-step__button"
                                     onClick={() => sponsorViaContract()}
                                     disabled={!hasSwitchedToIDChainNetwork()}
                                 >
@@ -1318,33 +1318,33 @@ function IdchainRegistration(props) {
                     </div>
                     <div
                         className="
-                            idchain-registration-step__description
-                            idchain-registration-step__description--action
-                            idchain-registration-step__description--action-hide-on-complete
+                            brightid-registration-step__description
+                            brightid-registration-step__description--action
+                            brightid-registration-step__description--action-hide-on-complete
                         "
                     >
-                        <p className="idchain-registration-step__description-p">
+                        <p className="brightid-registration-step__description-p">
                             This should happen automatically, but if not you can
                             manually put the transaction through with the button
                             in this step.
                         </p>
                     </div>
-                    <div className="idchain-registration-step__feedback">
+                    <div className="brightid-registration-step__feedback">
                         {isSponsoredViaContractTxnProcessing && (
-                            <div className="idchain-registration-step__response">
-                                <div className="idchain-registration-step__response-loading-icon">
-                                    <div className="idchain-registration-step__loading-icon">
+                            <div className="brightid-registration-step__response">
+                                <div className="brightid-registration-step__response-loading-icon">
+                                    <div className="brightid-registration-step__loading-icon">
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                     </div>
                                 </div>
-                                <div className="idchain-registration-step__response-message">
+                                <div className="brightid-registration-step__response-message">
                                     <div>Transaction is being processed...</div>
                                     <div>
                                         <a
-                                            className="idchain-registration-step__response-link"
+                                            className="brightid-registration-step__response-link"
                                             href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isSponsoredViaContractTxnId}`}
                                             target="_blank"
                                             rel="noreferrer"
@@ -1356,7 +1356,7 @@ function IdchainRegistration(props) {
                             </div>
                         )}
                         {stepSponsoredViaContractError && (
-                            <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                            <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                 {stepSponsoredViaContractError}
                             </div>
                         )}
@@ -1364,28 +1364,28 @@ function IdchainRegistration(props) {
                 </section>
                 <section
                     className={`
-                        idchain-registration-step
-                        idchain-registration-step--${getStepCompleteString(
+                        brightid-registration-step
+                        brightid-registration-step--${getStepCompleteString(
                             stepVerifyViaContractComplete()
                         )}
-                        idchain-registration-step--${getStepActiveString(
+                        brightid-registration-step--${getStepActiveString(
                             stepVerifyViaContractActive()
                         )}
                     `}
                 >
-                    <div className="idchain-registration-step__main">
-                        <div className="idchain-registration-step__status">
-                            <div className="idchain-registration-step__status-icon"></div>
+                    <div className="brightid-registration-step__main">
+                        <div className="brightid-registration-step__status">
+                            <div className="brightid-registration-step__status-icon"></div>
                         </div>
-                        <div className="idchain-registration-step__header">
-                            <h2 className="idchain-registration-step__heading">
+                        <div className="brightid-registration-step__header">
+                            <h2 className="brightid-registration-step__heading">
                                 Verify with Song a Day on IDChain
                             </h2>
                         </div>
-                        <div className="idchain-registration-step__action">
+                        <div className="brightid-registration-step__action">
                             {stepSwitchToIDChainNetworkComplete() && (
                                 <button
-                                    className="idchain-registration-step__button"
+                                    className="brightid-registration-step__button"
                                     onClick={() => verifyViaContract()}
                                 >
                                     Verify
@@ -1393,22 +1393,22 @@ function IdchainRegistration(props) {
                             )}
                         </div>
                     </div>
-                    <div className="idchain-registration-step__feedback">
+                    <div className="brightid-registration-step__feedback">
                         {isVerifiedViaContractTxnProcessing && (
-                            <div className="idchain-registration-step__response">
-                                <div className="idchain-registration-step__response-loading-icon">
-                                    <div className="idchain-registration-step__loading-icon">
+                            <div className="brightid-registration-step__response">
+                                <div className="brightid-registration-step__response-loading-icon">
+                                    <div className="brightid-registration-step__loading-icon">
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                     </div>
                                 </div>
-                                <div className="idchain-registration-step__response-message">
+                                <div className="brightid-registration-step__response-message">
                                     <div>Transaction is being processed...</div>
                                     <div>
                                         <a
-                                            className="idchain-registration-step__response-link"
+                                            className="brightid-registration-step__response-link"
                                             href={`${props.registrationBlockExplorerUrl}${props.registrationBlockExplorerTxnPath}${isVerifiedViaContractTxnId}`}
                                             target="_blank"
                                             rel="noreferrer"
@@ -1420,26 +1420,26 @@ function IdchainRegistration(props) {
                             </div>
                         )}
                         {stepVerifyViaContractError && (
-                            <div className="idchain-registration-step__response idchain-registration-step__response--error">
+                            <div className="brightid-registration-step__response brightid-registration-step__response--error">
                                 {stepVerifyViaContractError}
                             </div>
                         )}
                         {stepVerifyViaContractComplete() && (
-                            <div className="idchain-registration-step__description">
-                                <p className="idchain-registration-step__description-p">
+                            <div className="brightid-registration-step__description">
+                                <p className="brightid-registration-step__description-p">
                                     <strong>
                                         That's a wrap. You're ready to go.
                                     </strong>
                                 </p>
-                                <p className="idchain-registration-step__description-p">
+                                <p className="brightid-registration-step__description-p">
                                     Before you leave you can use the button
                                     below to switch your wallet back to the
                                     Ethereum mainnet.
                                 </p>
                                 {canAutoSwitchNetworks && (
-                                    <p className="idchain-registration-step__description-p">
+                                    <p className="brightid-registration-step__description-p">
                                         <button
-                                            className="idchain-registration-step__button"
+                                            className="brightid-registration-step__button"
                                             onClick={() =>
                                                 switchToMainnetNetwork()
                                             }
@@ -1457,4 +1457,4 @@ function IdchainRegistration(props) {
     );
 }
 
-export default IdchainRegistration;
+export default BrightIDRegistration;

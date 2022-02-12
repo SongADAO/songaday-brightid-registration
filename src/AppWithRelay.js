@@ -1,6 +1,7 @@
 import logo from "./logo.png";
 import "./App.css";
-import IdchainRegistrationViaRelay from "./IdchainRegistrationViaRelay";
+// import BrightIDRegistrationViaRelay from "./components/react-brightid-registration/src/BrightIDRegistrationViaRelay";
+import { BrightIDRegistrationViaRelay } from "react-brightid-registration";
 
 function AppWithRelay() {
     return (
@@ -13,8 +14,8 @@ function AppWithRelay() {
                 />
             </header>
             <main>
-                <div className="App-idchain-registration">
-                    <IdchainRegistrationViaRelay
+                <div className="App-brightid-registration">
+                    <BrightIDRegistrationViaRelay
                         appStoreAndroid="https://play.google.com/store/apps/details?id=org.brightid"
                         appStoreIos="https://apps.apple.com/us/app/brightid/id1428946820"
                         brightIdMeetUrl="https://meet.brightid.org"
@@ -27,7 +28,7 @@ function AppWithRelay() {
                         registrationChainId="74"
                         registrationRpcUrl="https://idchain.one/rpc/"
                         verificationUrl="https://app.brightid.org/node/v5/verifications"
-                        relayVerificationURL="https://idchain.songadao.org/idchain-registration-relay/register"
+                        relayVerificationURL="https://idchain.songadao.org/brightid-registration-relay/register"
                         // relayVerificationURL="http://localhost:5001/register"
                     />
                 </div>

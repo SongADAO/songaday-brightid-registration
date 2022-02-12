@@ -9,10 +9,10 @@ import AppWithRelay from "./AppWithRelay";
 
 ReactDOM.render(
     <React.StrictMode>
-        <BrowserRouter basename="/idchain-registration-simple">
+        <BrowserRouter basename="/brightid-registration">
             <Routes>
-                <Route path="/" element={<AppWithoutRelay />} />
-                <Route path="/gasless" element={<AppWithRelay />} />
+                <Route path="/" element={<AppWithRelay />} />
+                <Route path="/no-relay" element={<AppWithoutRelay />} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>,
