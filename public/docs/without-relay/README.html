@@ -1,153 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<title>Song a DAO - Snapshot Registration</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#000000"/>
-<link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-<h1 id="song-a-dao---snapshot-registration">Song a DAO - Snapshot
-Registration</h1>
-<h2 id="reason-for-registration">Reason for Registration</h2>
-<section>
-<p>Song a DAO is different than most DAOs you are already familliar
-with. Unlike what has become the traditional DAO format, where the
-voting power of an indiviudal is tied to the number of tokens they have,
-Song a DAO is setup so that each person has one vote regardless of their
-total number of NFTs held. This is because Song a DAO is a registered
-CO-OP in the state of Colorado. The voting structure reflects the legal
-status of the organziation.</p>
-This means is that we need a way to determine that no person can ever
-cast more than one vote. The biggest hurdle here is protecting the vote
-from people who buy multiple NFTs and hold each one in a seperate
-wallet. To accomplish this we are using a service called
-<a href="https://www.brightid.org/" target="_blank">BrightID</a>, which
-provides a method for verifying a person is an actual person and combat
-the situation of one anon pretending to be multiple people.
-</section>
-<hr />
-<h2 id="registration-app">Registration App</h2>
-<section>
-<p>There are a number of steps in the registration process. We’ve
-created a simple registration dapp for you to use to complete each step
-in the process.</p>
-<p>It can be accessed at
-<a href="https://idchain.songadao.org/idchain-registration/" target="_blank">Song
-a Day Registration App</a></p>
-The rest of this documentation explains what the steps you will be doing
-in the registration app are for.
-</section>
-<hr />
-<h2 id="step-1-install-verify-with-brightid">Step 1: Install &amp;
-Verify with BrightID</h2>
-<p>The first step of this process is to install the BrightID mobile app
-and go through their registration process.</p>
-<p><img alt="Install & Verify with BrightID Img" src="img/step1-install-verify-v2.png" width="320"></p>
-<!-- https://brightid.gitbook.io/brightid/getting-verified -->
-<hr />
-<h2 id="step-2-connect-wallet">Step 2: Connect Wallet</h2>
-<p>For this step just connect to the site with the wallet that contains
-your Song A Day NFT.</p>
-<p><img alt="Connect Wallet" src="img/step2-connect.png" width="320"></p>
-<hr />
-<h2 id="step-3-link-wallet-with-idchain">Step 3: Link Wallet with
-IDChain</h2>
-<p>In this step you will link your wallet to IDChain so that you can
-optain some gas tokens you will need in a future step. Complete this
-step by scanning the QR code with the device that has BrightID installed
-on, or just click the “Link Address” button if you’re already on that
-device.</p>
-<p><img alt="Link Wallet to IDChain Faucet" src="img/step3-link-idchain.png" width="320"></p>
-<hr />
-<h2 id="step-4-link-wallet-with-snapshot">Step 4: Link Wallet with
-Snapshot</h2>
-<p>This step is almost exactly the same as the previous step, except in
-this one you are linking your wallet to Snapshot. Complete this step by
-scanning the QR code with the device that has BrightID installed on, or
-just click the “Link Address” button if you’re already on that
-device.</p>
-<p><img alt="Link Wallet to Snapshot" src="img/step4-link-snapshot.png" width="320"></p>
-<hr />
-<h2 id="step-5-switch-to-idchain-network-in-your-wallet.">Step 5: Switch
-to IDChain network in your wallet.</h2>
-<p>In order to avoid any transactions costs for registering we use the
-IDChain network, which is an Ethereum sidechain created by the same
-people who created BrightID. To execute transactions on IDChain you will
-need to add it as a network to your wallet.</p>
-<hr />
-<h3 id="desktop">Desktop</h3>
-<p>If you’re on MetaMask desktop it’s as simple as clicking a button in
-our registration dapp and confirming the addition of the IDChain network
-when prompted by MetaMask.</p>
-<p><img alt="Add IDChain on Desktop" src="img/step5-switch-chain-desktop.png" width="320"></p>
-<hr />
-<h3 id="mobile">Mobile</h3>
-<p>If you’re on mobile the process requires some manual intervention.
-MetaMask is used in the following example. If you use an alternative
-wallet check the documentation for that wallet to see if they offer
-instructions for adding an additional network.</p>
-<p><img alt="Add IDChain on Mobile" src="img/step5-switch-chain-mobile.png" width="320"></p>
-<hr />
-<h4
-id="open-your-metamask-and-clicktap-on-where-it-says-ethereum-mainnet">Open
-your MetaMask and click/tap on where it says “Ethereum Mainnet”</h4>
-<p><img alt="Click Etereum Mainnet" src="img/add-network-1.png" width="320"></p>
-<hr />
-<h4 id="clicktab-on-add-network">Click/tab on “Add Network”</h4>
-<p><img alt="Click on Add Network" src="img/add-network-2.png" width="320"></p>
-<hr />
-<h4 id="fill-in-network-details">Fill in Network Details</h4>
-<section class="col-2">
-<p>You’ll see something like the screenshot below (depending on if
-you’re on mobile or desktop.)</p>
-<p>On this page, fill in the fields with the following information:</p>
-<p><strong>Network Name:</strong> IDChain</p>
-<p><strong>RPC URL:</strong> https://idchain.one/rpc/</p>
-<p><strong>Chain ID:</strong> 74</p>
-<p><strong>Currency Symbol:</strong> Eidi</p>
-<p><strong>Block Explorer URL:</strong> https://explorer.idchain.one</p>
-</section>
-<p><img alt="Network Info Fields" src="img/add-network-3.png" width="320"></p>
-<hr />
-<h2 id="step-6-obtain-idchain-network-gas-tokens">Step 6: Obtain IDChain
-Network Gas Tokens</h2>
-<p>You will need some of the gas tokens for the IDChain network in order
-to run transactions in the next steps. To get some just click the
-“Obtain” button in this step and wait around 30 seconds. The
-registration dapp will update with your balance once the tokens have
-been transferred.</p>
-<p><img alt="Obtain Gas Balance" src="img/step6-balance.png" width="320"></p>
-<hr />
-<h2 id="step-7-become-sponsored-on-idchain">Step 7: Become Sponsored on
-IDChain</h2>
-<p>As the message on this step says, it should happen automatically as
-part of the earlier verification steps. By the time you get here it has
-most likely already completed in the background while you were doing the
-other steps. If, however, you get to this step and it still shows as
-incomplete, you can click the “Go” button to process a sponsorship
-transaction yourself.</p>
-<p><img alt="Become Sponsored on IDChain" src="img/step7-sponsored.png" width="320"></p>
-<hr />
-<h2 id="step-8-verify-with-song-a-day-on-idchain">Step 8: Verify with
-Song a Day on IDChain</h2>
-<p>This is the final step, and is what will register you to vote in the
-DAO. This step will execute a wallet transaction on the IDChain network.
-Click the “Verify” button to initiate it and then confirm the
-transaction like you would any other. You will be executing this on the
-IDChain blockchain with the tokens you obtained in the earlier step.
-Once the verification transaction confirms the registration dapp will
-update to reflect your completed verification status.</p>
-<p><img alt="Verify with Song a Day on IDChain" src="img/step8-verify.png" width="320"></p>
-<hr />
-<h2 id="step-9-verification-complete">Step 9: Verification Complete</h2>
-<p>And that’s it. You’re registered and can now vote on DAO proposals.
-Before you leave you will want to switch your wallet back to the
-Ethereum mainnet. If you’re on desktop, you can just click the “Switch
-back to Mainnet” button. If you’re on mobile, just use the same method
-you used to switch to IDChain, but select “Etereum Mainnet” in the list
-of networks.</p>
-<p><img alt="Verification Complete" src="img/step8a-verify-complete.png" width="320"></p>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Song a DAO - Snapshot Registration</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <h1 id="song-a-dao---snapshot-registration">
+            Song a DAO - Snapshot Registration
+        </h1>
+        <h2 id="reason-for-registration">Reason for Registration</h2>
+        <section>
+            <p>
+                Song a DAO is different than most DAOs you are already familiar
+                with. Unlike what has become the traditional DAO format, where
+                the voting power of an individual is tied to the number of
+                tokens they have, Song a DAO is setup so that each person has
+                one vote regardless of their total number of NFTs held. This is
+                because Song a DAO is a registered CO-OP in the state of
+                Colorado. The voting structure reflects the legal status of the
+                organization.
+            </p>
+            <p>
+                This means is that we need a way to determine that no person can
+                ever cast more than one vote. The biggest hurdle here is
+                protecting the vote from people who buy multiple NFTs and hold
+                each one in a separate wallet. To accomplish this we are using a
+                service called
+                <a href="https://www.brightid.org/" target="_blank">BrightID</a
+                >, which provides a method for verifying a person is an actual
+                person and combat the situation of one anon pretending to be
+                multiple people.
+            </p>
+        </section>
+        <hr />
+        <h2 id="registration-app">Registration App</h2>
+        <section>
+            <p>
+                There are a number of steps in the registration process. We’ve
+                created a simple registration dapp for you to use to complete
+                each step in the process.
+            </p>
+            <p>
+                It can be accessed at
+                <a
+                    href="https://idchain.songadao.org/idchain-registration/"
+                    target="_blank"
+                    >Song a Day Registration App</a
+                >
+            </p>
+            <p>
+                The rest of this documentation explains what the steps you will
+                be doing in the registration app are for.
+            </p>
+        </section>
+        <hr />
+        <h2 id="step-1-install-verify-with-brightid">
+            Step 1: Install &amp; Verify with BrightID
+        </h2>
+        <p>
+            The first step of this process is to install the BrightID mobile app
+            and go through their registration process.
+        </p>
+        <p>
+            <img
+                alt="Install & Verify with BrightID Img"
+                src="img/step1-install-verify-v2.png"
+                width="320"
+            />
+        </p>
+        <!-- https://brightid.gitbook.io/brightid/getting-verified -->
+        <hr />
+        <h2 id="step-2-connect-wallet">Step 2: Connect Wallet</h2>
+        <p>
+            For this step just connect to the site with the wallet that contains
+            your Song A Day NFT.
+        </p>
+        <p>
+            <img alt="Connect Wallet" src="img/step2-connect.png" width="320" />
+        </p>
+        <hr />
+        <h2 id="step-3-link-wallet-with-idchain">
+            Step 3: Link Wallet with IDChain
+        </h2>
+        <p>
+            In this step you will link your wallet to IDChain so that you can
+            optain some gas tokens you will need in a future step. Complete this
+            step by scanning the QR code with the device that has BrightID
+            installed on, or just click the “Link Address” button if you’re
+            already on that device.
+        </p>
+        <p>
+            <img
+                alt="Link Wallet to IDChain Faucet"
+                src="img/step3-link-idchain.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-4-link-wallet-with-snapshot">
+            Step 4: Link Wallet with Snapshot
+        </h2>
+        <p>
+            This step is almost exactly the same as the previous step, except in
+            this one you are linking your wallet to Snapshot. Complete this step
+            by scanning the QR code with the device that has BrightID installed
+            on, or just click the “Link Address” button if you’re already on
+            that device.
+        </p>
+        <p>
+            <img
+                alt="Link Wallet to Snapshot"
+                src="img/step4-link-snapshot.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-5-switch-to-idchain-network-in-your-wallet.">
+            Step 5: Switch to IDChain network in your wallet.
+        </h2>
+        <p>
+            In order to avoid any transactions costs for registering we use the
+            IDChain network, which is an Ethereum sidechain created by the same
+            people who created BrightID. To execute transactions on IDChain you
+            will need to add it as a network to your wallet.
+        </p>
+        <hr />
+        <h3 id="desktop">Desktop</h3>
+        <p>
+            If you’re on MetaMask desktop it’s as simple as clicking a button in
+            our registration dapp and confirming the addition of the IDChain
+            network when prompted by MetaMask.
+        </p>
+        <p>
+            <img
+                alt="Add IDChain on Desktop"
+                src="img/step5-switch-chain-desktop.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h3 id="mobile">Mobile</h3>
+        <p>
+            If you’re on mobile the process requires some manual intervention.
+            MetaMask is used in the following example. If you use an alternative
+            wallet check the documentation for that wallet to see if they offer
+            instructions for adding an additional network.
+        </p>
+        <p>
+            <img
+                alt="Add IDChain on Mobile"
+                src="img/step5-switch-chain-mobile.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h4
+            id="open-your-metamask-and-clicktap-on-where-it-says-ethereum-mainnet"
+        >
+            Open your MetaMask and click/tap on where it says “Ethereum Mainnet”
+        </h4>
+        <p>
+            <img
+                alt="Click Etereum Mainnet"
+                src="img/add-network-1.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h4 id="clicktab-on-add-network">Click/tab on “Add Network”</h4>
+        <p>
+            <img
+                alt="Click on Add Network"
+                src="img/add-network-2.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h4 id="fill-in-network-details">Fill in Network Details</h4>
+        <section class="col-2">
+            <p>
+                You’ll see something like the screenshot below (depending on if
+                you’re on mobile or desktop.)
+            </p>
+            <p>
+                On this page, fill in the fields with the following information:
+            </p>
+            <p><strong>Network Name:</strong> IDChain</p>
+            <p><strong>RPC URL:</strong> https://idchain.one/rpc/</p>
+            <p><strong>Chain ID:</strong> 74</p>
+            <p><strong>Currency Symbol:</strong> Eidi</p>
+            <p>
+                <strong>Block Explorer URL:</strong>
+                https://explorer.idchain.one
+            </p>
+        </section>
+        <p>
+            <img
+                alt="Network Info Fields"
+                src="img/add-network-3.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-6-obtain-idchain-network-gas-tokens">
+            Step 6: Obtain IDChain Network Gas Tokens
+        </h2>
+        <p>
+            You will need some of the gas tokens for the IDChain network in
+            order to run transactions in the next steps. To get some just click
+            the “Obtain” button in this step and wait around 30 seconds. The
+            registration dapp will update with your balance once the tokens have
+            been transferred.
+        </p>
+        <p>
+            <img
+                alt="Obtain Gas Balance"
+                src="img/step6-balance.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-7-become-sponsored-on-idchain">
+            Step 7: Become Sponsored on IDChain
+        </h2>
+        <p>
+            As the message on this step says, it should happen automatically as
+            part of the earlier verification steps. By the time you get here it
+            has most likely already completed in the background while you were
+            doing the other steps. If, however, you get to this step and it
+            still shows as incomplete, you can click the “Go” button to process
+            a sponsorship transaction yourself.
+        </p>
+        <p>
+            <img
+                alt="Become Sponsored on IDChain"
+                src="img/step7-sponsored.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-8-verify-with-song-a-day-on-idchain">
+            Step 8: Verify with Song a Day on IDChain
+        </h2>
+        <p>
+            This is the final step, and is what will register you to vote in the
+            DAO. This step will execute a wallet transaction on the IDChain
+            network. Click the “Verify” button to initiate it and then confirm
+            the transaction like you would any other. You will be executing this
+            on the IDChain blockchain with the tokens you obtained in the
+            earlier step. Once the verification transaction confirms the
+            registration dapp will update to reflect your completed verification
+            status.
+        </p>
+        <p>
+            <img
+                alt="Verify with Song a Day on IDChain"
+                src="img/step8-verify.png"
+                width="320"
+            />
+        </p>
+        <hr />
+        <h2 id="step-9-verification-complete">Step 9: Verification Complete</h2>
+        <p>
+            And that’s it. You’re registered and can now vote on DAO proposals.
+            Before you leave you will want to switch your wallet back to the
+            Ethereum mainnet. If you’re on desktop, you can just click the
+            “Switch back to Mainnet” button. If you’re on mobile, just use the
+            same method you used to switch to IDChain, but select “Etereum
+            Mainnet” in the list of networks.
+        </p>
+        <p>
+            <img
+                alt="Verification Complete"
+                src="img/step8a-verify-complete.png"
+                width="320"
+            />
+        </p>
+    </body>
 </html>
