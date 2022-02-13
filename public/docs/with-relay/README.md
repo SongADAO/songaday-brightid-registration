@@ -42,11 +42,11 @@ For this step just connect to the site with the wallet that contains your Song A
 
 ---
 
-## Step 3: Link Wallet with Snapshot
+## Step 3: Link Wallet to BrightID
 
-In this step you are linking your wallet to Snapshot. Complete this step by scanning the QR code with the device that has BrightID installed on, or just click the "Link Address" button if you're already on that device.
+In this step you are linking your wallet to BrightID. Complete this step by scanning the QR code with the device that has BrightID installed on, or just click the "Link Address" button if you're already on that device.
 
-<img alt="Link Wallet to Snapshot" src="img/step3-link-brightid-mobile.png" width="320">
+<img alt="Link Wallet to BrightID" src="img/step3-link-brightid-mobile.png" width="320">
 
 ---
 
