@@ -22,7 +22,7 @@ function AppWithRelay() {
                         mainnetRpcUrl="https://mainnet.infura.io/v3/60a7b2c16321439a917c9e74a994f7df"
                         walletConnectInfuraId="60a7b2c16321439a917c9e74a994f7df"
                         relayVerificationURL="https://idchain.songadao.org/brightid-registration-relay/register"
-                        // relayVerificationURL="http://localhost:5001/register"
+                        // relayVerificationURL="http://localhost:5001/brightid-registration-relay/register"
 
                         // appStoreAndroid="https://play.google.com/store/apps/details?id=org.brightid"
                         // appStoreIos="https://apps.apple.com/us/app/brightid/id1428946820"
