@@ -7,7 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppWithoutRelay from "./AppWithoutRelay";
 import AppWithRelay from "./AppWithRelay";
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
     <React.StrictMode>
         <BrowserRouter basename="/brightid-registration">
             <Routes>
@@ -15,8 +16,7 @@ ReactDOM.render(
                 <Route path="/without-relay" element={<AppWithoutRelay />} />
             </Routes>
         </BrowserRouter>
-    </React.StrictMode>,
-    document.getElementById("root")
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
